@@ -1,7 +1,7 @@
 #include "lista.h"
 #include "testing.h"
 #include "pila.h"
-
+#include <stdio.h>
 
 static void pruebas_lista_vacia(){
     printf("--- INICIO DE PRUEBAS lista VACIA ---\n");
@@ -291,7 +291,7 @@ static void pruebas_iter_externos_volumen(){
     lista_destruir(lista,NULL);
 }
 
-static void pruebas(){
+void pruebas_lista_estudiante(){
     pruebas_lista_vacia();
     pruebas_lista_null();
     pruebas_lista_insertar();
@@ -303,6 +303,6 @@ static void pruebas(){
     prueba_pila_dentro_de_lista();
 }
 int main(void){
-    pruebas();  
+    pruebas_lista_estudiante();  
     return 0;
 }
