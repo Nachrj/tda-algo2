@@ -204,14 +204,13 @@ static void prueba_hash_valor_null()
     print_test("Prueba hash pertenece clave vacia, es true", hash_pertenece(hash, clave));
     print_test("Prueba hash borrar clave vacia, es valor NULL", hash_borrar(hash, clave) == valor);
     print_test("Prueba hash la cantidad de elementos es 0", hash_cantidad(hash) == 0);
-
     hash_destruir(hash);
 }
 
 static void prueba_hash_volumen(size_t largo, bool debug)
 {
     hash_t* hash = hash_crear(NULL);
-
+    
     const size_t largo_clave = 10;
     char (*claves)[largo_clave] = malloc(largo * largo_clave);
 
@@ -224,6 +223,7 @@ static void prueba_hash_volumen(size_t largo, bool debug)
         sprintf(claves[i], "%08d", i);
         *valores[i] = i;
         ok = hash_guardar(hash, claves[i], valores[i]);
+        
         if (!ok) break;
     }
 

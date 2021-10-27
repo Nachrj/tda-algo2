@@ -52,21 +52,34 @@ hash_t *hash_crear(hash_destruir_dato_t destruir_dato){
     return _hash_malloc(destruir_dato, CAPACIDAD_INICIAL);
 }
 
-bool hash_redimensionar(hash_t* hash){
+bool hash_redimensionar(hash_t* hash, size_t n){
     // Creo el nuevo hash con la nueva capacidad 
-    hash_t* new_hash = _hash_malloc(hash->destruir_dato, hash->capacidad*2);
-
+    
+    hash_t* new_hash = _hash_malloc(hash->destruir_dato, n);
+    if(!new_hash) return false;
     // Rehashing de todos los elementos del hash antiguo
     for(size_t i = 0; i < hash->capacidad; i++){
         lista_iter_t* iter = lista_iter_crear(hash->lista[i]);
         if(!iter) return false;
-        item_t* actual = (item_t*)lista_iter_ver_actual(iter);
-        hash_guardar(new_hash, actual->clave, actual->dato);
-    }
-    return new_hash;
+        while(!lista_iter_al_final(iter)){
+            item_t* actual = (item_t*)lista_iter_ver_actual(iter);
+            hash_guardar(new_hash, actual->clave, actual->dato);
+            lista_iter_avanzar(iter);
+        }
+        lista_iter_destruir(iter);
+    } 
+    hash = new_hash;
+    return true;
 }
 
 bool hash_guardar(hash_t *hash, const char *clave, void *dato){
+    if(hash->cantidad/hash->capacidad > 2){
+        if(!hash_redimensionar(hash,hash->capacidad*2)){
+            return false;
+        }
+    }
+        
+    
     size_t clave_hash = hash_f(clave,hash->capacidad);
     item_t* item = calloc(1,sizeof(item_t));
     if(!item) return false;
@@ -75,14 +88,24 @@ bool hash_guardar(hash_t *hash, const char *clave, void *dato){
     // Preguntar si ya existe
     if (hash_pertenece(hash, clave)){
         // Si existe, reemplazar el dato
-    
+        lista_iter_t* iter = lista_iter_crear(hash->lista[clave_hash]);
+        while(!lista_iter_al_final(iter)){
+            item_t* item = lista_iter_ver_actual(iter);
+            if(item->clave == clave){
+                item->dato = dato;
+                break;
+            }
+            lista_iter_avanzar(iter);
+        }
+
+        lista_iter_destruir(iter);
+        hash->cantidad++;
         return true;
     }
 
     // Inserto y pregunto si hay que redimensionar el hash
     if(!lista_insertar_ultimo(hash->lista[clave_hash],item)) return false;
     hash->cantidad++;
-    if(hash->cantidad/hash->capacidad > 1) return hash_redimensionar(hash);
     return true;
 }
 
@@ -152,6 +175,10 @@ size_t hash_cantidad(const hash_t *hash) {
     return hash->cantidad;  // Devuelve la cantidad de elementos del hash
 }
 
+size_t hash_capacidad(const hash_t *hash) {
+    return hash->capacidad;  // Devuelve la cantidad de elementos del hash
+}
+
 void hash_destruir(hash_t *hash) {
     for(size_t i = 0; i < hash->capacidad; i++){
         if (hash->lista[i]) {
@@ -208,15 +235,15 @@ void hash_iter_destruir(hash_iter_t *iter) {
     lista_iter_destruir(iter->lista_iter);
     free(iter);
 }
-
+/*
 int main() {
-    int dato = 323;
+    char* dato = "MUNDO";
     //void *dato2 = "Mundo";
     //void *dato3 = "Planeta";
     hash_t* hash = hash_crear(NULL);
     printf("%ld",hash_f("hola",hash->capacidad));   
     printf("Creo el hash");
-    printf("%d", hash_guardar(hash,"hola", &dato));
+    printf("%d", hash_guardar(hash,"hola", dato));
     item_t* ankara = (item_t*)lista_ver_primero(hash->lista[9]);
     printf("%p", &dato);
     printf("\n");
@@ -231,4 +258,5 @@ int main() {
     //printf("\n");
     hash_destruir(hash);
     return 0;
-}
+}*/
+

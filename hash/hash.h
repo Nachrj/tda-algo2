@@ -25,6 +25,7 @@ hash_t *hash_crear(hash_destruir_dato_t destruir_dato);
  */
 bool hash_guardar(hash_t *hash, const char *clave, void *dato);
 
+
 /* Borra un elemento del hash y devuelve el dato asociado.  Devuelve
  * NULL si el dato no estaba.
  * Pre: La estructura hash fue inicializada
@@ -48,7 +49,7 @@ bool hash_pertenece(const hash_t *hash, const char *clave);
  * Pre: La estructura hash fue inicializada
  */
 size_t hash_cantidad(const hash_t *hash);
-
+size_t hash_capacidad(const hash_t *hash);
 /* Destruye la estructura liberando la memoria pedida y llamando a la función
  * destruir para cada par (clave, dato).
  * Pre: La estructura hash fue inicializada
