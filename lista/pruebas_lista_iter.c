@@ -302,7 +302,9 @@ void pruebas_lista_estudiante(){
     pruebas_iter_externos_volumen();
     prueba_pila_dentro_de_lista();
 }
+#ifndef CORRECTOR  // Para que no dé conflicto con el main() del corrector.
 int main(void){
     pruebas_lista_estudiante();  
-    return 0;
+    return failure_count() > 0;
 }
+#endif
