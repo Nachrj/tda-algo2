@@ -27,7 +27,6 @@ static void prueba_crear_hash_vacio()
     print_test("Prueba hash obtener clave A, es NULL, no existe", !hash_obtener(hash, "A"));
     print_test("Prueba hash pertenece clave A, es false, no existe", !hash_pertenece(hash, "A"));
     print_test("Prueba hash borrar clave A, es NULL, no existe", !hash_borrar(hash, "A"));
-
     hash_destruir(hash);
 }
 

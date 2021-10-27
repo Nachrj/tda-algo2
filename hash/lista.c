@@ -124,8 +124,6 @@ void *lista_iter_borrar(lista_iter_t *iter) {
     }
     free(aux);
     return dato;
-
-    
 }
 
 // *** PRIMITIVA ITERADOR INTERNO ***
