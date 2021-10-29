@@ -220,16 +220,18 @@ hash_iter_t* hash_iter_crear(const hash_t* hash) {
 
 bool hash_iter_avanzar(hash_iter_t* iter) {
     if (!iter->lista_iter) return false;
+    
     if (lista_iter_avanzar(iter->lista_iter)) return true;
+    
     while (iter->pos < iter->hash->capacidad) {
-        if (lista_esta_vacia(iter->hash->lista[iter->pos])) {
-            iter->pos++;
+        iter->pos++;
+        if (!lista_esta_vacia(iter->hash->lista[iter->pos])) {
             lista_iter_destruir(iter->lista_iter);
             iter->lista_iter = lista_iter_crear(iter->hash->lista[iter->pos]);
             if (!iter->lista_iter) return false;
             if (lista_iter_avanzar(iter->lista_iter)) return true;
         }
-        iter->pos++;
+        
     }
     return false;
 }
@@ -264,11 +266,22 @@ void hash_iter_destruir(hash_iter_t* iter) {
 /*
 int main() {
     hash_t* hash = hash_crear(NULL);
+
+    char *claves[] = {"perro", "gato", "vaca"};
+    char *valores[] = {"guau", "miau", "mu"};
+
+    // Inserta 3 valores 
+    hash_guardar(hash, claves[0], valores[0]);
+    hash_guardar(hash, claves[1], valores[1]);
+    hash_guardar(hash, claves[2], valores[2]);
     hash_iter_t* iter = hash_iter_crear(hash);
-    hash_iter_al_final(iter);
-    hash_iter_ver_actual(iter);
+    hash_iter_avanzar(iter);
     hash_iter_avanzar(iter);
     hash_iter_ver_actual(iter);
+    hash_iter_avanzar(iter);
+   
+
+
     
     char* dato = "MUNDO";
     //void *dato2 = "Mundo";
