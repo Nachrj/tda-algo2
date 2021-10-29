@@ -77,28 +77,38 @@ bool hash_redimensionar(hash_t* hash, size_t n) {
     return true;
 }
 
+const char* copia_clave(const char *clave){
+	size_t len = strlen(clave);
+	const char* copia = malloc((len+1)*sizeof(char));
+	strcpy((char*)copia,clave);
+	return copia;
+}
+
 bool hash_guardar(hash_t* hash, const char* clave, void* dato) {
+    
     if (hash->cantidad / hash->capacidad >= 2) {
         if (!hash_redimensionar(hash, hash->capacidad * 2)) return false;
     }
+
+
     size_t clave_hash = hash_f(clave, hash->capacidad);
     item_t* item = calloc(1, sizeof(item_t));
     if (!item) return false;
     item->dato = dato;
-    item->clave = clave;
+    item->clave = copia_clave(clave);
+    
     // Preguntar si ya existe
     if (hash_pertenece(hash, clave)) {
         // Si existe, reemplazar el dato
         lista_iter_t* iter = lista_iter_crear(hash->lista[clave_hash]);
         while (!lista_iter_al_final(iter)) {
-        item_t* item = lista_iter_ver_actual(iter);
-        if (item->clave == clave) {
-            item->dato = dato;
-            return true;
+          item_t* item = lista_iter_ver_actual(iter);
+          if (!strcmp(item->clave,clave)) {
+              item->dato = dato;
+              return true;
         }
         lista_iter_avanzar(iter);
         }
-
         lista_iter_destruir(iter);
         hash->cantidad++;
         return true;
@@ -106,6 +116,7 @@ bool hash_guardar(hash_t* hash, const char* clave, void* dato) {
 
   // Inserto y pregunto si hay que redimensionar el hash
   if (!lista_insertar_ultimo(hash->lista[clave_hash], item)) return false;
+  
   hash->cantidad++;
   return true;
 }
@@ -119,7 +130,7 @@ void* hash_borrar(hash_t* hash, const char* clave) {
 
         while (!lista_iter_al_final(iter)) {
             item_t* actual = (item_t*)lista_iter_ver_actual(iter);
-            if (actual->clave == clave) {
+            if (!strcmp(actual->clave,clave)) {
             item_t* dato = lista_iter_borrar(iter);
             hash->cantidad--;
             lista_iter_destruir(iter);
@@ -141,7 +152,7 @@ void* hash_obtener(const hash_t* hash, const char* clave) {
 
     while (!lista_iter_al_final(iter)) {
         item_t* actual = lista_iter_ver_actual(iter);
-        if (actual->clave == clave) {
+        if (!strcmp(actual->clave,clave)) {
         lista_iter_destruir(iter);
         return actual->dato;
         }
@@ -161,7 +172,7 @@ bool hash_pertenece(const hash_t* hash, const char* clave) {
 
     while (!lista_iter_al_final(iter)) {
         item_t* actual = lista_iter_ver_actual(iter);
-        if (actual->clave == clave) {
+        if (!strcmp(actual->clave,clave)) {
         lista_iter_destruir(iter);
         return true;
         }
@@ -195,20 +206,15 @@ void hash_destruir(hash_t* hash) {
 hash_iter_t* hash_iter_crear(const hash_t* hash) {
     hash_iter_t* iter = calloc(1, sizeof(hash_iter_t));
     if (!iter) return NULL;
-    if (hash->cantidad == 0) {
-        iter->hash = hash;
-        iter->lista_iter = NULL;
-        iter->pos = 0;
-        return iter;
-    }
     iter->hash = hash;
-	for (int i=0; i < hash->capacidad; i++){
-		if (!lista_esta_vacia(hash->lista[i])){
-			iter->lista_iter = lista_iter_crear(hash->lista[i]);
-			iter->pos = i;
-			break;
-		}
-	}
+    iter->lista_iter = NULL;
+    for (int i=0; i < hash->capacidad; i++){
+      if (!lista_esta_vacia(hash->lista[i])){
+        iter->lista_iter = lista_iter_crear(hash->lista[i]);
+        iter->pos = i;
+        break;
+      }
+    }
     return iter;
 }
 
@@ -230,6 +236,7 @@ bool hash_iter_avanzar(hash_iter_t* iter) {
 
 // Devuelve clave actual, esa clave no se puede modificar ni liberar.
 const char* hash_iter_ver_actual(const hash_iter_t* iter) {
+    if(hash_iter_al_final(iter)) return NULL;
     item_t* actual = lista_iter_ver_actual(iter->lista_iter);
     if (!actual) return NULL;
     return actual->clave;
@@ -254,15 +261,15 @@ void hash_iter_destruir(hash_iter_t* iter) {
     lista_iter_destruir(iter->lista_iter);
     free(iter);
 }
-
+/*
 int main() {
-    printf("hola");
     hash_t* hash = hash_crear(NULL);
     hash_iter_t* iter = hash_iter_crear(hash);
-    printf("hola");
     hash_iter_al_final(iter);
+    hash_iter_ver_actual(iter);
     hash_iter_avanzar(iter);
-    /*  
+    hash_iter_ver_actual(iter);
+    
     char* dato = "MUNDO";
     //void *dato2 = "Mundo";
     //void *dato3 = "Planeta";
@@ -282,6 +289,7 @@ int main() {
     //printf("%d", hash_guardar(hash,"adios", dato3));
     //printf("%d",hash_pertenece(hash,"hola"));
     //printf("\n");
+    
     hash_destruir(hash);
     return 0;
 }*/

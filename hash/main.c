@@ -9,7 +9,7 @@
 
 void pruebas_hash_catedra(void);
 void pruebas_volumen_catedra(size_t);
-/*
+
 int main(int argc, char *argv[]) {
 //#ifdef CORRECTOR
     if (argc > 1) {
@@ -25,4 +25,4 @@ int main(int argc, char *argv[]) {
 //#endif
 
     return failure_count() > 0;
-}*/
+}

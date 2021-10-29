@@ -285,7 +285,7 @@ static void prueba_hash_iterar()
     printf("\n--- INICIO PRUEBAS DE ITERADOR ---\n");
     hash_t* hash = hash_crear(NULL);
 
-    char *claves[] = {"messi", "aaaa", "vaca"};
+    char *claves[] = {"perro", "gato", "vaca"};
     char *valores[] = {"guau", "miau", "mu"};
 
     /* Inserta 3 valores */
