@@ -20,8 +20,9 @@ size_t hash_f(const char* str, size_t n) {
 
 typedef struct item {
     void* dato;
-    const char* clave;
+    char* clave;
 } item_t;
+
 
 struct hash {
     lista_t** lista;
@@ -35,6 +36,16 @@ struct hash_iter {
     lista_iter_t* lista_iter;
     size_t pos;
 };
+
+void item_destruir(hash_destruir_dato_t destruir_dato, item_t* item){
+    
+    if(destruir_dato){
+        destruir_dato(item->dato);
+    }
+    free(item->clave);
+    free(item);
+
+}
 
 hash_t* _hash_malloc(hash_destruir_dato_t destruir_dato, size_t capacidad) {
     hash_t* hash = calloc(1, sizeof(hash_t));
@@ -77,9 +88,9 @@ bool hash_redimensionar(hash_t* hash, size_t n) {
     return true;
 }
 
-const char* copia_clave(const char *clave){
+char* copia_clave(const char *clave){
 	size_t len = strlen(clave);
-	const char* copia = malloc((len+1)*sizeof(char));
+	char* copia = malloc((len+1)*sizeof(char));
 	strcpy((char*)copia,clave);
 	return copia;
 }
@@ -89,13 +100,7 @@ bool hash_guardar(hash_t* hash, const char* clave, void* dato) {
     if (hash->cantidad / hash->capacidad >= 2) {
         if (!hash_redimensionar(hash, hash->capacidad * 2)) return false;
     }
-
-
     size_t clave_hash = hash_f(clave, hash->capacidad);
-    item_t* item = calloc(1, sizeof(item_t));
-    if (!item) return false;
-    item->dato = dato;
-    item->clave = copia_clave(clave);
     
     // Preguntar si ya existe
     if (hash_pertenece(hash, clave)) {
@@ -113,6 +118,13 @@ bool hash_guardar(hash_t* hash, const char* clave, void* dato) {
         hash->cantidad++;
         return true;
     }
+    item_t* item = calloc(1, sizeof(item_t));
+    if (!item) return false;
+    item->dato = dato;
+    item->clave = copia_clave(clave);
+    
+    
+    
 
   // Inserto y pregunto si hay que redimensionar el hash
   if (!lista_insertar_ultimo(hash->lista[clave_hash], item)) return false;
@@ -122,23 +134,24 @@ bool hash_guardar(hash_t* hash, const char* clave, void* dato) {
 }
 
 void* hash_borrar(hash_t* hash, const char* clave) {
-        size_t clave_hash = hash_f(clave, hash->capacidad);
-        if (!hash->lista[clave_hash]) return NULL;
+    size_t clave_hash = hash_f(clave, hash->capacidad);
+    if (!hash->lista[clave_hash]) return NULL;
 
-        lista_iter_t* iter = lista_iter_crear(hash->lista[clave_hash]);
-        if (!iter) return NULL;
+    lista_iter_t* iter = lista_iter_crear(hash->lista[clave_hash]);
+    if (!iter) return NULL;
 
-        while (!lista_iter_al_final(iter)) {
-            item_t* actual = (item_t*)lista_iter_ver_actual(iter);
-            if (!strcmp(actual->clave,clave)) {
-            item_t* dato = lista_iter_borrar(iter);
+    while (!lista_iter_al_final(iter)) {
+        item_t* actual = lista_iter_ver_actual(iter);
+        if (!strcmp(actual->clave,clave)) {
+            item_t* item = lista_iter_borrar(iter);
+            void* dato = item->dato;
+            item_destruir(hash->destruir_dato,item);
             hash->cantidad--;
             lista_iter_destruir(iter);
-            return dato->dato;
-            }
-            lista_iter_avanzar(iter);
+            return dato;
+        }
+        lista_iter_avanzar(iter);
     }
-
     lista_iter_destruir(iter);
     return NULL;
 }
@@ -193,8 +206,13 @@ size_t hash_capacidad(const hash_t* hash) {
 
 void hash_destruir(hash_t* hash) {
     for (size_t i = 0; i < hash->capacidad; i++) {
-        if (hash->lista[i]) {
-        lista_destruir(hash->lista[i], hash->destruir_dato);
+        if (!lista_esta_vacia(hash->lista[i])) {
+            lista_iter_t* iter = lista_iter_crear(hash->lista[i]);
+            while(!lista_iter_al_final(iter)){
+                item_destruir(hash->destruir_dato,lista_iter_ver_actual(iter));
+                lista_iter_avanzar(iter);
+            }
+            lista_iter_destruir(iter);
         }
     }
     free(hash->lista);
@@ -220,18 +238,19 @@ hash_iter_t* hash_iter_crear(const hash_t* hash) {
 
 bool hash_iter_avanzar(hash_iter_t* iter) {
     if (!iter->lista_iter) return false;
-    
-    if (lista_iter_avanzar(iter->lista_iter)) return true;
-    
+    if(hash_iter_al_final(iter)) return false;
+    if (lista_iter_avanzar(iter->lista_iter)){
+		if (!lista_iter_al_final(iter->lista_iter) || hash_iter_al_final(iter)) return true;
+	}
+    iter->pos++;
     while (iter->pos < iter->hash->capacidad) {
-        iter->pos++;
         if (!lista_esta_vacia(iter->hash->lista[iter->pos])) {
             lista_iter_destruir(iter->lista_iter);
             iter->lista_iter = lista_iter_crear(iter->hash->lista[iter->pos]);
             if (!iter->lista_iter) return false;
-            if (lista_iter_avanzar(iter->lista_iter)) return true;
+            return true;
         }
-        
+        iter->pos++;
     }
     return false;
 }
@@ -247,10 +266,10 @@ const char* hash_iter_ver_actual(const hash_iter_t* iter) {
 // Comprueba si terminó la iteración
 bool hash_iter_al_final(const hash_iter_t* iter) {
     if (!iter->lista_iter) return true;
-    size_t pos_inicial = iter->pos;
+    size_t pos_inicial = iter->pos+1;
     if (lista_iter_al_final(iter->lista_iter)) {
-        while(pos_inicial != iter->hash->capacidad-1) {
-            if (iter->hash->lista[pos_inicial]) return false;
+        while(pos_inicial != iter->hash->capacidad) {
+            if (!lista_esta_vacia(iter->hash->lista[pos_inicial])) return false;
             pos_inicial++;
         }
         return true;    
@@ -274,14 +293,10 @@ int main() {
     hash_guardar(hash, claves[0], valores[0]);
     hash_guardar(hash, claves[1], valores[1]);
     hash_guardar(hash, claves[2], valores[2]);
-    hash_iter_t* iter = hash_iter_crear(hash);
-    hash_iter_avanzar(iter);
-    hash_iter_avanzar(iter);
-    hash_iter_ver_actual(iter);
-    hash_iter_avanzar(iter);
+
    
 
-
+    
     
     char* dato = "MUNDO";
     //void *dato2 = "Mundo";
