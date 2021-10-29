@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "testing.h"
+
 #include "lista.h"
 #define CAPACIDAD_INICIAL 11
 
@@ -38,7 +40,6 @@ struct hash_iter {
 };
 
 void item_destruir(hash_destruir_dato_t destruir_dato, item_t* item){
-    
     if(destruir_dato){
         destruir_dato(item->dato);
     }
@@ -66,21 +67,19 @@ hash_t* hash_crear(hash_destruir_dato_t destruir_dato) {
 
 bool hash_redimensionar(hash_t* hash, size_t n) {
   // Creo el nuevo hash con la nueva capacidad
-    lista_t** new_lista = calloc(n,sizeof(lista_t*));
+    lista_t** new_lista = calloc(n,sizeof(lista_t**));
     if (!new_lista) return false;
-    for (size_t i = 0; i < n; i++) {
-        new_lista[i] = lista_crear();
+    for (size_t j = 0; j < n; j++) {
+        new_lista[j] = lista_crear();
     }
     for (size_t i = 0; i < hash->capacidad; i++) {
-        lista_iter_t* iter = lista_iter_crear(hash->lista[i]);
-        if (!iter) return false;
-        while (!lista_iter_al_final(iter)) {
-            item_t* item = lista_iter_ver_actual(iter);
-            size_t pos = hash_f(item->clave, n);
-            lista_insertar_ultimo(new_lista[pos], item);
-            lista_iter_avanzar(iter);
-        }
-        lista_iter_destruir(iter);
+		lista_t* lista = hash->lista[i];
+		while(!lista_esta_vacia(lista)){
+			item_t* item = lista_borrar_primero(lista);
+			size_t pos = hash_f(item->clave, n);
+			lista_insertar_ultimo(new_lista[pos],item); 
+		}
+		lista_destruir(lista, NULL);
     }
     free(hash->lista);
     hash->lista = new_lista;
@@ -112,7 +111,7 @@ bool hash_guardar(hash_t* hash, const char* clave, void* dato) {
               item->dato = dato;
               return true;
         }
-        lista_iter_avanzar(iter);
+            lista_iter_avanzar(iter);
         }
         lista_iter_destruir(iter);
         hash->cantidad++;
@@ -123,9 +122,6 @@ bool hash_guardar(hash_t* hash, const char* clave, void* dato) {
     item->dato = dato;
     item->clave = copia_clave(clave);
     
-    
-    
-
   // Inserto y pregunto si hay que redimensionar el hash
   if (!lista_insertar_ultimo(hash->lista[clave_hash], item)) return false;
   
@@ -206,14 +202,14 @@ size_t hash_capacidad(const hash_t* hash) {
 
 void hash_destruir(hash_t* hash) {
     for (size_t i = 0; i < hash->capacidad; i++) {
-        if (!lista_esta_vacia(hash->lista[i])) {
-            lista_iter_t* iter = lista_iter_crear(hash->lista[i]);
-            while(!lista_iter_al_final(iter)){
-                item_destruir(hash->destruir_dato,lista_iter_ver_actual(iter));
-                lista_iter_avanzar(iter);
-            }
-            lista_iter_destruir(iter);
+        lista_iter_t* iter = lista_iter_crear(hash->lista[i]);
+        if (!iter) return;
+        while(!lista_iter_al_final(iter)){
+            item_destruir(hash->destruir_dato,lista_iter_ver_actual(iter));
+            lista_iter_avanzar(iter);
         }
+        lista_iter_destruir(iter);
+        lista_destruir(hash->lista[i],NULL);
     }
     free(hash->lista);
     free(hash);
@@ -282,42 +278,36 @@ void hash_iter_destruir(hash_iter_t* iter) {
     lista_iter_destruir(iter->lista_iter);
     free(iter);
 }
-/*
+
 int main() {
-    hash_t* hash = hash_crear(NULL);
+    hash_t* hash = hash_crear(free);
 
-    char *claves[] = {"perro", "gato", "vaca"};
-    char *valores[] = {"guau", "miau", "mu"};
+    char *clave1 = "perro", *valor1a, *valor1b;
+    char *clave2 = "gato", *valor2a, *valor2b;
 
-    // Inserta 3 valores 
-    hash_guardar(hash, claves[0], valores[0]);
-    hash_guardar(hash, claves[1], valores[1]);
-    hash_guardar(hash, claves[2], valores[2]);
+    /* Pide memoria para 4 valores */
+    valor1a = malloc(10 * sizeof(char));
+    valor1b = malloc(10 * sizeof(char));
+    valor2a = malloc(10 * sizeof(char));
+    valor2b = malloc(10 * sizeof(char));
 
-   
+    /* Inserta 2 valores y luego los reemplaza (debe liberar lo que reemplaza) */
+    print_test("Prueba hash insertar clave1", hash_guardar(hash, clave1, valor1a));
+    print_test("Prueba hash obtener clave1 es valor1a", hash_obtener(hash, clave1) == valor1a);
+    print_test("Prueba hash obtener clave1 es valor1a", hash_obtener(hash, clave1) == valor1a);
+    print_test("Prueba hash insertar clave2", hash_guardar(hash, clave2, valor2a));
+    print_test("Prueba hash obtener clave2 es valor2a", hash_obtener(hash, clave2) == valor2a);
+    print_test("Prueba hash obtener clave2 es valor2a", hash_obtener(hash, clave2) == valor2a);
+    print_test("Prueba hash la cantidad de elementos es 2", hash_cantidad(hash) == 2);
 
-    
-    
-    char* dato = "MUNDO";
-    //void *dato2 = "Mundo";
-    //void *dato3 = "Planeta";
-    hash_t* hash = hash_crear(NULL);
-    printf("%ld",hash_f("hola",hash->capacidad));
-    printf("Creo el hash");
-    printf("%d", hash_guardar(hash,"hola", dato));
-    item_t* ankara = (item_t*)lista_ver_primero(hash->lista[9]);
-    printf("%p", &dato);
-    printf("\n");
-    printf("%d", *(int*)ankara->dato);
-    printf("\n");
-    printf("%d",*(int*)hash_obtener(hash, "hola"));
+    print_test("Prueba hash insertar clave1 con otro valor", hash_guardar(hash, clave1, valor1b));
+    print_test("Prueba hash obtener clave1 es valor1b", hash_obtener(hash, clave1) == valor1b);
+    print_test("Prueba hash obtener clave1 es valor1b", hash_obtener(hash, clave1) == valor1b);
+    print_test("Prueba hash insertar clave2 con otro valor", hash_guardar(hash, clave2, valor2b));
+    print_test("Prueba hash obtener clave2 es valor2b", hash_obtener(hash, clave2) == valor2b);
+    print_test("Prueba hash obtener clave2 es valor2b", hash_obtener(hash, clave2) == valor2b);
+    print_test("Prueba hash la cantidad de elementos es 2", hash_cantidad(hash) == 2);
 
-    //printf("%s",*(char**)ankara->dato);
-    //printf("%d", hash_guardar(hash,"chau", dato2));
-    //printf("%d", hash_guardar(hash,"adios", dato3));
-    //printf("%d",hash_pertenece(hash,"hola"));
-    //printf("\n");
-    
+    /* Se destruye el hash (se debe liberar lo que quedó dentro) */
     hash_destruir(hash);
-    return 0;
-}*/
+}
