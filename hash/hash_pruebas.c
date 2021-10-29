@@ -209,6 +209,7 @@ static void prueba_hash_valor_null()
 
 static void prueba_hash_volumen(size_t largo, bool debug)
 {
+    printf("\n--------INICIO PRUEBAS HASH VOLUMEN--------\n");
     hash_t* hash = hash_crear(NULL);
     
     const size_t largo_clave = 10;
@@ -278,6 +279,7 @@ static ssize_t buscar(const char* clave, char* claves[], size_t largo)
 
 static void prueba_hash_iterar()
 {
+    printf("\n--------INICIO PRUEBAS ITERADOR HASH--------\n");
     hash_t* hash = hash_crear(NULL);
 
     char *claves[] = {"perro", "gato", "vaca"};
@@ -330,6 +332,7 @@ static void prueba_hash_iterar()
 
 static void prueba_hash_iterar_volumen(size_t largo)
 {
+    printf("\n--------INICIO PRUEBAS ITERADOR VOLUMEN--------\n");
     hash_t* hash = hash_crear(NULL);
 
     const size_t largo_clave = 10;
