@@ -283,7 +283,7 @@ static void prueba_hash_iterar()
     hash_t* hash = hash_crear(NULL);
 
     char *claves[] = {"perro", "gato", "vaca"};
-    char *valores[] = {NULL, NULL, NULL};
+    char *valores[] = {"guau", "miau", "mu"};
 
     /* Inserta 3 valores */
     print_test("Prueba hash insertar clave1", hash_guardar(hash, claves[0], valores[0]));

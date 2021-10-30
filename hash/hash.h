@@ -55,7 +55,6 @@ size_t hash_cantidad(const hash_t *hash);
  * Post: La estructura hash fue destruida
  */
 
-size_t hash_capacidad(const hash_t *hash);
 void hash_destruir(hash_t *hash);
 
 /* Iterador del hash */
