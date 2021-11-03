@@ -1,4 +1,7 @@
 #include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+#include <stdio.h>
 
 typedef struct abb abb_t;
 typedef struct abb_iter abb_iter_t;
