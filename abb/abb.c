@@ -42,8 +42,6 @@ abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
     abb->cantidad = 0;
 }
 
-
-
 bool _abb_guardar(abb_t *arbol, const char *clave, void *dato, nodo_t* actual){
     // Si el arbol no tiene raiz, el nodo a ingresar se convierte en su raiz
     if(!arbol->raiz){
@@ -79,19 +77,50 @@ bool _abb_guardar(abb_t *arbol, const char *clave, void *dato, nodo_t* actual){
 
 bool abb_guardar(abb_t *arbol, const char *clave, void *dato){
     _abb_guardar(arbol,clave,dato,arbol->raiz);
+    arbol->cantidad++;
 }
 void *abb_borrar(abb_t *arbol, const char *clave){
     return NULL;
 }
+void *_abb_obtener(const abb_t *arbol, const char *clave, nodo_t* actual){
+    if(!actual || !arbol->raiz) return NULL;
+
+    if(!arbol->cmp(clave,actual->clave)){
+        return actual->dato;
+    }
+
+    if(arbol->cmp(clave,actual->clave)>0){
+        return _abb_obtener(arbol,clave,actual->der);
+    }
+    else{
+        return _abb_obtener(arbol,clave,actual->izq);
+    }
+}
+
 void *abb_obtener(const abb_t *arbol, const char *clave){
-    return NULL;
+    _abb_obtener(arbol,clave,arbol->raiz);
+}
+
+bool _abb_pertenece(const abb_t *arbol, const char *clave, nodo_t* actual){
+    if(!actual || !arbol->raiz) return false;
+
+    if(!arbol->cmp(clave,actual->clave)){
+        return true;
+    }
+
+    if(arbol->cmp(clave,actual->clave)>0){
+        return _abb_obtener(arbol,clave,actual->der);
+    }
+    else{
+        return _abb_obtener(arbol,clave,actual->izq);
+    }
 }
 bool abb_pertenece(const abb_t *arbol, const char *clave){
-    return false;
+    return _abb_obtener(arbol,clave,arbol->raiz);
 }
 
 size_t abb_cantidad(const abb_t *arbol){
-    return 0;
+    return arbol->cantidad;
 }
 
 void abb_destruir(abb_t *arbol){
@@ -126,8 +155,9 @@ int main(void){
     abb_t* abb = abb_crear(strcmp,NULL);
     int dato1 = 1;
     int dato2 = 2;
-    abb_guardar(abb,"Nacho",&dato1);
-    abb_guardar(abb,"Echi",&dato2);
-    printf("%p",abb->raiz->izq);
+    int dato3 = 3;
+    abb_guardar(abb,"a",&dato1);
+    abb_guardar(abb,"d",&dato2);
+    abb_guardar(abb,"c",&dato3);
     return 0;
 }
