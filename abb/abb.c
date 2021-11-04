@@ -40,6 +40,7 @@ abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
     abb->cmp = cmp;
     abb->destruir_dato = destruir_dato;
     abb->cantidad = 0;
+    return abb;
 }
 
 bool _abb_guardar(abb_t *arbol, const char *clave, void *dato, nodo_t* actual){
@@ -75,8 +76,9 @@ bool _abb_guardar(abb_t *arbol, const char *clave, void *dato, nodo_t* actual){
 }
 
 bool abb_guardar(abb_t *arbol, const char *clave, void *dato){
-    _abb_guardar(arbol,clave,dato,arbol->raiz);
+    if (!_abb_guardar(arbol,clave,dato,arbol->raiz)) return false;
     arbol->cantidad++;
+    return true;
 }
 
 nodo_t *_abb_borrar(abb_t* arbol, const char* clave, nodo_t* actual, void** dato){
@@ -89,11 +91,10 @@ nodo_t *_abb_borrar(abb_t* arbol, const char* clave, nodo_t* actual, void** dato
         if(!actual->izq && !actual->der){
             return NULL;
         }
-        // Caso 1 hijo
+        // Casos 1 hijo
         if(!actual->izq && actual->der){
-            return actual->der;
+          return actual->der;
         }
-        
         if(!actual->der && actual->izq){
             return actual->izq;
         }
@@ -104,18 +105,22 @@ nodo_t *_abb_borrar(abb_t* arbol, const char* clave, nodo_t* actual, void** dato
         if(!arbol->cmp(clave,actual->der->clave)){
             actual->der = nodo;
         }
+        arbol->cantidad--;
         return actual;
     }
     nodo_t* nodo = _abb_borrar(arbol,clave,actual->izq,dato);
     if(!arbol->cmp(clave,actual->izq->clave)){
         actual->izq = nodo;
     }
+    arbol->cantidad--;
     return actual;
 }
 
 void *abb_borrar(abb_t *arbol, const char *clave){
     void* dato = NULL;
-    _abb_borrar(arbol,clave,arbol->raiz, &dato);
+    if (_abb_borrar(arbol,clave,arbol->raiz, &dato)){
+        arbol->cantidad--;
+    }
     return dato;
 }
 
@@ -133,7 +138,7 @@ void *_abb_obtener(const abb_t *arbol, const char *clave, nodo_t* actual){
 }
 
 void *abb_obtener(const abb_t *arbol, const char *clave){
-    _abb_obtener(arbol,clave,arbol->raiz);
+    return _abb_obtener(arbol,clave,arbol->raiz);
 }
 
 bool _abb_pertenece(const abb_t *arbol, const char *clave, nodo_t* actual){
