@@ -1,7 +1,7 @@
 #include "abb.h"
 #include "pila.h" 
 
-typedef struct nsodo nodo_t;
+typedef struct nodo nodo_t;
 
 struct nodo {
     void* dato; // Apunta al dato almacenado
@@ -221,7 +221,9 @@ abb_iter_t *abb_iter_in_crear(const abb_t *arbol){
     if(!iter) return NULL;
     pila_t* pila = pila_crear();
     iter->pila = pila;
-    pila_apilar(iter->pila,arbol->raiz);
+    if(arbol->raiz){
+        pila_apilar(iter->pila,arbol->raiz);
+    }
     return iter;
 }
 
@@ -238,7 +240,9 @@ bool abb_iter_in_avanzar(abb_iter_t *iter){
 }
 
 const char *abb_iter_in_ver_actual(const abb_iter_t *iter){
-    return (pila_ver_tope(iter->pila))->clave;
+    if(abb_iter_in_al_final(iter)) return NULL;
+    nodo_t* tope = pila_ver_tope(iter->pila);
+    return tope->clave;
 }
 
 bool abb_iter_in_al_final(const abb_iter_t *iter){
@@ -249,13 +253,24 @@ void abb_iter_in_destruir(abb_iter_t* iter){
     pila_destruir(iter->pila);
     free(iter);
 }
-
+/*
 int main(void){
-    /*abb_t* abb = abb_crear(strcmp,NULL);
+    
+    abb_t* abb = abb_crear(strcmp,NULL);
+    abb_iter_t* iter = abb_iter_in_crear(abb);
+    
     int datos[] = {10,5,21,7,15,13,19,17,20,18,16};
     abb_guardar(abb,"i",&datos[0]);
     abb_guardar(abb,"b",&datos[1]);
     abb_guardar(abb,"z",&datos[2]);
+    
+    abb_iter_in_avanzar(iter);
+    abb_iter_in_avanzar(iter);
+    abb_iter_in_avanzar(iter);
+    
+    //const char* actual = abb_iter_in_ver_actual(iter);
+    printf("%d\n", abb_iter_in_al_final(iter));
+    
     abb_guardar(abb,"d",&datos[3]);
     abb_guardar(abb,"o",&datos[4]);
     abb_guardar(abb,"n",&datos[5]);
@@ -265,7 +280,7 @@ int main(void){
     abb_guardar(abb,"v",&datos[9]);
     abb_guardar(abb,"t",&datos[10]);
     abb_borrar(abb, "o");
-    
-    abb_destruir(abb);*/
+
+    abb_destruir(abb);
     return 0;
-}
+}*/

@@ -419,3 +419,8 @@ void pruebas_volumen_catedra(size_t largo)
 {
     prueba_abb_volumen(largo, false);
 }
+
+int main(void){
+    pruebas_abb_catedra();
+    return 0;
+}
