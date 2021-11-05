@@ -41,11 +41,6 @@ struct abb{
     
 };
 
-struct abb_iter{
-    abb_t* arbol;
-    nodo_t* actual;
-};
-
 abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
     abb_t* abb = calloc(1,sizeof(abb_t));
     if(!abb) return NULL;
@@ -101,7 +96,6 @@ nodo_t* mas_derecha(nodo_t* actual, nodo_t** extremo){
     actual->izq = mas_derecha(actual->izq, extremo);
     return actual;
 }
-
 nodo_t *_abb_borrar(abb_t* arbol, const char* clave, nodo_t* actual, void** dato){
     if(!actual) return NULL;
     if(!abb_pertenece(arbol,clave)) return NULL;
@@ -224,10 +218,10 @@ void abb_iter_in_destruir(abb_iter_t* iter){
     return;
 }
 
-int main(void){
+/*int main(void){
     abb_t* abb = abb_crear(strcmp,NULL);
     int datos[] = {10,5,21,7,15,13,19,17,20,18,16};
-    /*abb_guardar(abb,"i",&datos[0]);
+    abb_guardar(abb,"i",&datos[0]);
     abb_guardar(abb,"b",&datos[1]);
     abb_guardar(abb,"z",&datos[2]);
     abb_guardar(abb,"d",&datos[3]);
@@ -238,9 +232,8 @@ int main(void){
     abb_guardar(abb,"y",&datos[8]);
     abb_guardar(abb,"v",&datos[9]);
     abb_guardar(abb,"t",&datos[10]);
-    */
-    printf("%p\n",abb->raiz->der);
+    printf("%d\n",*(int*)abb->raiz->dato);
     
     abb_destruir(abb);
     return 0;
-}
+}*/
