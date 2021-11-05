@@ -10,6 +10,18 @@ struct nodo {
     nodo_t* der; // Apunta al nodo derecho
 };
 
+struct abb{
+    nodo_t* raiz;
+    size_t cantidad;
+    abb_comparar_clave_t cmp;
+    abb_destruir_dato_t destruir_dato;
+    
+};
+
+struct abb_iter{
+    pila_t* pila;
+};
+
 // *** PRIMITIVAS DE NODO ***
 char* copia_clave(const char *clave){
 	size_t len = strlen(clave);
@@ -34,18 +46,7 @@ void nodo_destruir(nodo_t* nodo){
     free(nodo);
 }
 
-struct abb{
-    nodo_t* raiz;
-    size_t cantidad;
-    abb_comparar_clave_t cmp;
-    abb_destruir_dato_t destruir_dato;
-    
-};
-
-struct abb_iter{
-    pila_t* pila;
-};
-
+// *** PRIMITIVAS DEL ABB ***
 abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
     abb_t* abb = calloc(1,sizeof(abb_t));
     if(!abb) return NULL;
@@ -91,6 +92,7 @@ bool abb_guardar(abb_t *arbol, const char *clave, void *dato){
     arbol->cantidad++;
     return true;
 }
+
 nodo_t* mas_derecha(nodo_t* actual, nodo_t** extremo){
     //printf("%d",*(int*)actual->dato);
     if(!actual) return NULL;
@@ -175,6 +177,7 @@ bool _abb_pertenece(const abb_t *arbol, const char *clave, nodo_t* actual){
     }
     return _abb_pertenece(arbol,clave,actual->izq);
 }
+
 bool abb_pertenece(const abb_t *arbol, const char *clave){
     return _abb_pertenece(arbol,clave,arbol->raiz);
 }
@@ -200,6 +203,7 @@ void abb_destruir(abb_t *arbol){
     free(arbol);
 }
 
+// *** PRIMITIVAS DE ITERADOR INTERNO ***
 void _abb_in_order(abb_t* arbol, nodo_t* actual, bool visitar(const char *, void *, void *), void *extra){
     if(!actual) return;
     _abb_in_order(arbol,actual->izq,visitar,extra);
@@ -211,6 +215,7 @@ void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void
     _abb_in_order(arbol,arbol->raiz,visitar,extra);
 }
 
+// *** PRIMITIVAS DE ITERADOR EXTERNO ***
 abb_iter_t *abb_iter_in_crear(const abb_t *arbol){
     abb_iter_t* iter = malloc(sizeof(abb_iter_t));
     if(!iter) return NULL;
