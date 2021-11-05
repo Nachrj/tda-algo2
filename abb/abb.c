@@ -200,11 +200,20 @@ void abb_destruir(abb_t *arbol){
     free(arbol);
 }
 
+void _abb_in_order(abb_t* arbol, nodo_t* actual, bool visitar(const char *, void *, void *), void *extra){
+    if(!actual) return;
+    _abb_in_order(arbol,actual->izq,visitar,extra);
+    visitar(actual->clave,actual->dato,extra);
+    _abb_in_order(arbol,actual->der,visitar,extra);
+}
+
 void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void *extra){
-    return;
+    _abb_in_order(arbol,arbol->raiz,visitar,extra);
 }
 
 abb_iter_t *abb_iter_in_crear(const abb_t *arbol){
+    abb_iter_t* iter = malloc(sizeof(abb_iter_t));
+    if(!iter) return NULL;
     return NULL;
 }
 
@@ -225,9 +234,9 @@ void abb_iter_in_destruir(abb_iter_t* iter){
 }
 
 int main(void){
-    abb_t* abb = abb_crear(strcmp,NULL);
+    /*abb_t* abb = abb_crear(strcmp,NULL);
     int datos[] = {10,5,21,7,15,13,19,17,20,18,16};
-    /*abb_guardar(abb,"i",&datos[0]);
+    abb_guardar(abb,"i",&datos[0]);
     abb_guardar(abb,"b",&datos[1]);
     abb_guardar(abb,"z",&datos[2]);
     abb_guardar(abb,"d",&datos[3]);
@@ -238,9 +247,8 @@ int main(void){
     abb_guardar(abb,"y",&datos[8]);
     abb_guardar(abb,"v",&datos[9]);
     abb_guardar(abb,"t",&datos[10]);
-    */
-    printf("%p\n",abb->raiz->der);
+    abb_borrar(abb, "o");
     
-    abb_destruir(abb);
+    abb_destruir(abb);*/
     return 0;
 }
