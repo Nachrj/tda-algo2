@@ -1,6 +1,7 @@
 #include "abb.h"
+#include "pila.h" 
 
-typedef struct nodo nodo_t;
+typedef struct nsodo nodo_t;
 
 struct nodo {
     void* dato; // Apunta al dato almacenado
@@ -42,8 +43,7 @@ struct abb{
 };
 
 struct abb_iter{
-    abb_t* arbol;
-    nodo_t* actual;
+    pila_t* pila;
 };
 
 abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
@@ -214,23 +214,35 @@ void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void
 abb_iter_t *abb_iter_in_crear(const abb_t *arbol){
     abb_iter_t* iter = malloc(sizeof(abb_iter_t));
     if(!iter) return NULL;
-    return NULL;
+    pila_t* pila = pila_crear();
+    iter->pila = pila;
+    pila_apilar(iter->pila,arbol->raiz);
+    return iter;
 }
 
 bool abb_iter_in_avanzar(abb_iter_t *iter){
-    return false;
+    if(abb_iter_in_al_final(iter)) return false;
+    nodo_t* actual = pila_desapilar(iter->pila);
+    if(actual->der){
+        pila_apilar(iter->pila,actual->der);
+    }
+    if(actual->izq){
+        pila_apilar(iter->pila,actual->izq);
+    }
+    return true;
 }
 
 const char *abb_iter_in_ver_actual(const abb_iter_t *iter){
-    return NULL;
+    return (pila_ver_tope(iter->pila))->clave;
 }
 
 bool abb_iter_in_al_final(const abb_iter_t *iter){
-    return false;
+    return pila_esta_vacia(iter->pila);
 }
 
 void abb_iter_in_destruir(abb_iter_t* iter){
-    return;
+    pila_destruir(iter->pila);
+    free(iter);
 }
 
 int main(void){
