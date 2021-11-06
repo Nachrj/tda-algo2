@@ -52,6 +52,7 @@ abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
     if(!abb) return NULL;
     abb->cmp = cmp;
     abb->destruir_dato = destruir_dato;
+    abb->cantidad = 0;
     return abb;
 }
 
@@ -59,6 +60,7 @@ bool _abb_guardar(abb_t *arbol, const char *clave, void *dato, nodo_t* actual){
     // Si el arbol no tiene raiz, el nodo a ingresar se convierte en su raiz
     if(!arbol->raiz){
         arbol->raiz = nodo_crear(clave,dato);
+        arbol->cantidad++;
         return true;
     }
 
@@ -74,6 +76,7 @@ bool _abb_guardar(abb_t *arbol, const char *clave, void *dato, nodo_t* actual){
     if(arbol->cmp(clave,actual->clave)>0){
         if(!actual->der){
             actual->der = nodo_crear(clave,dato);
+            arbol->cantidad++;
             return true;
         }
         return _abb_guardar(arbol,clave,dato,actual->der);
@@ -81,6 +84,7 @@ bool _abb_guardar(abb_t *arbol, const char *clave, void *dato, nodo_t* actual){
     else{
         if(!actual->izq){
             actual->izq = nodo_crear(clave,dato);
+            arbol->cantidad++;
             return true;
         }
         return _abb_guardar(arbol,clave,dato,actual->izq);
@@ -89,7 +93,6 @@ bool _abb_guardar(abb_t *arbol, const char *clave, void *dato, nodo_t* actual){
 
 bool abb_guardar(abb_t *arbol, const char *clave, void *dato){
     if (!_abb_guardar(arbol,clave,dato,arbol->raiz)) return false;
-    arbol->cantidad++;
     return true;
 }
 
@@ -142,9 +145,8 @@ nodo_t *_abb_borrar(abb_t* arbol, const char* clave, nodo_t* actual, void** dato
 
 void *abb_borrar(abb_t *arbol, const char *clave){
     void* dato = NULL;
-    if (_abb_borrar(arbol,clave,arbol->raiz, &dato)){
-        arbol->cantidad--;
-    }
+    _abb_borrar(arbol,clave,arbol->raiz, &dato);
+    if (dato) arbol->cantidad--;
     return dato;
 }
 

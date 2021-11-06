@@ -137,6 +137,11 @@ static void prueba_abb_reemplazar_con_destruir()
     abb_destruir(abb);
 }
 
+bool print(const char* clave, void* dato, void* extra) {
+    printf("%d\n", *(char*)clave);
+    return true;
+}
+
 static void prueba_abb_borrar()
 {
     abb_t* abb = abb_crear(strcmp,NULL);
@@ -158,8 +163,13 @@ static void prueba_abb_borrar()
     print_test("Prueba abb obtener clave3, es NULL", !abb_obtener(abb, clave3));
     print_test("Prueba abb la cantidad de elementos es 2", abb_cantidad(abb) == 2);
 
+    abb_in_order(abb, print, NULL);
+
     print_test("Prueba abb pertenece clave1, es verdadero", abb_pertenece(abb, clave1));
     print_test("Prueba abb borrar clave1, es valor1", abb_borrar(abb, clave1) == valor1);
+
+    abb_in_order(abb, print, NULL);
+
     print_test("Prueba abb borrar clave1, es NULL", !abb_borrar(abb, clave1));
     print_test("Prueba abb pertenece clave1, es falso", !abb_pertenece(abb, clave1));
     print_test("Prueba abb obtener clave1, es NULL", !abb_obtener(abb, clave1));
