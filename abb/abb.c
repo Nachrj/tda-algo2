@@ -113,14 +113,20 @@ nodo_t *_abb_borrar(abb_t* arbol, const char* clave, nodo_t* actual, void** dato
     
     if(!arbol->cmp(clave,actual->clave)){
         *dato = actual->dato;
-        /*
-        Aca deberia pasar algo en el caso que ell que quieras borrar sea la raiz.
+        //Aca deberia pasar algo en el caso que ell que quieras borrar sea la raiz.
+        if(actual == arbol->raiz) {
+            nodo_t* borrado = actual;
+            arbol->raiz = actual->izq;
+            return borrado;
+        }
+/*
         if(actual == arbol->raiz){
             nodo_t* izq = _abb_borrar(arbol,clave,actual->izq,dato);
             arbol->raiz = izq;
+            arbol->cantidad--;
             return izq;
-        }
-        */
+        }*/
+        
         // Caso 0 hijos
         if(!actual->izq && !actual->der){
             return NULL;
@@ -207,6 +213,7 @@ void _abb_destruir(abb_t* arbol, nodo_t* actual){
     free(actual);
 
 }
+
 void abb_destruir(abb_t *arbol){
     _abb_destruir(arbol,arbol->raiz);
     free(arbol);
