@@ -1,5 +1,7 @@
 #include "abb.h"
 #include "pila.h" 
+#include <stdlib.h>
+#include <string.h>
 
 typedef struct nodo nodo_t;
 
@@ -119,13 +121,6 @@ nodo_t *_abb_borrar(abb_t* arbol, const char* clave, nodo_t* actual, void** dato
             arbol->raiz = actual->izq;
             return borrado;
         }
-/*
-        if(actual == arbol->raiz){
-            nodo_t* izq = _abb_borrar(arbol,clave,actual->izq,dato);
-            arbol->raiz = izq;
-            arbol->cantidad--;
-            return izq;
-        }*/
         
         // Caso 0 hijos
         if(!actual->izq && !actual->der){
@@ -145,7 +140,7 @@ nodo_t *_abb_borrar(abb_t* arbol, const char* clave, nodo_t* actual, void** dato
             //free cosas de actual
             actual->clave = ext->clave;
             actual->dato = ext->dato;
-            //free ext
+            nodo_destruir(ext);
             return actual;
         }
     } else if(arbol->cmp(clave,actual->clave) > 0){
@@ -158,9 +153,12 @@ nodo_t *_abb_borrar(abb_t* arbol, const char* clave, nodo_t* actual, void** dato
 
 void *abb_borrar(abb_t *arbol, const char *clave){
     void* dato = NULL;
-    _abb_borrar(arbol,clave,arbol->raiz, &dato);
-    if (dato) arbol->cantidad--;
-    return dato;
+    if (abb_pertenece(arbol,clave)) {
+        _abb_borrar(arbol,clave,arbol->raiz, &dato);
+        arbol->cantidad--;
+        return dato;
+    }
+    return NULL;
 }
 
 void *_abb_obtener(const abb_t *arbol, const char *clave, nodo_t* actual){
@@ -223,7 +221,7 @@ void abb_destruir(abb_t *arbol){
 void _abb_in_order(abb_t* arbol, nodo_t* actual, bool visitar(const char *, void *, void *), void *extra){
     if(!actual) return;
     _abb_in_order(arbol,actual->izq,visitar,extra);
-    visitar(actual->clave,actual->dato,extra);
+     if (!visitar(actual->clave,actual->dato,extra)) return;
     _abb_in_order(arbol,actual->der,visitar,extra);
 }
 

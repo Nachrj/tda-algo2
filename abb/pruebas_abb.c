@@ -409,7 +409,7 @@ static void prueba_abb_iterar_volumen(size_t largo)
  * *****************************************************************/
 
 
-void pruebas_abb_catedra()
+void pruebas_abb_estudiante()
 {
     /* Ejecuta todas las pruebas unitarias. */
     prueba_crear_abb_vacio();
@@ -425,12 +425,14 @@ void pruebas_abb_catedra()
     prueba_abb_iterar_volumen(5000);
 }
 
-void pruebas_volumen_catedra(size_t largo)
+void pruebas_volumen_estudiante(size_t largo)
 {
     prueba_abb_volumen(largo, false);
 }
 
+#ifndef CORRECTOR
 int main(void){
-    pruebas_abb_catedra();
+    pruebas_abb_estudiante();
     return 0;
 }
+#endif
