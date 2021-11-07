@@ -44,7 +44,11 @@ nodo_t *nodo_crear(const char* clave, void* dato) {
     return nodo;
 }
 
-void nodo_destruir(nodo_t* nodo){
+void nodo_destruir(abb_destruir_dato_t destruir_dato, nodo_t* nodo){
+    if(destruir_dato){
+        destruir_dato(nodo->dato);
+    }
+    free((char*)nodo->clave);
     free(nodo);
 }
 
@@ -70,6 +74,9 @@ bool _abb_guardar(abb_t *arbol, const char *clave, void *dato, nodo_t* actual){
     
     // Si la clave ya existe, se sobreescribe el dato
     if(!arbol->cmp(clave,actual->clave)){
+        if(arbol->destruir_dato){
+            arbol->destruir_dato(actual->dato);
+        }
         actual->dato = dato;
         return true;
     }
@@ -111,21 +118,30 @@ nodo_t* mas_derecha(nodo_t* actual, nodo_t** extremo){
 
 nodo_t *_abb_borrar(abb_t* arbol, const char* clave, nodo_t* actual, void** dato){
     if(!actual) return NULL;
-    if(!abb_pertenece(arbol,clave)) return NULL;
     
     if(!arbol->cmp(clave,actual->clave)){
         *dato = actual->dato;
         //Aca deberia pasar algo en el caso que ell que quieras borrar sea la raiz.
-        if(actual == arbol->raiz) {
-            nodo_t* borrado = actual;
-            arbol->raiz = actual->izq;
-            return borrado;
-        }
         
+        if(actual == arbol->raiz) {
+            nodo_t* borrado = _abb_borrar(arbol,clave,actual->izq,dato);
+            nodo_t* aux = arbol->raiz;
+            if(borrado){
+                borrado->der = actual->der;
+                arbol->raiz = borrado;
+                nodo_destruir(arbol->destruir_dato,aux);
+                return borrado;
+            }
+            arbol->raiz = actual->der;
+            nodo_destruir(arbol->destruir_dato,aux);
+            return actual;
+            
+        }
         // Caso 0 hijos
         if(!actual->izq && !actual->der){
             return NULL;
         }
+
         // Casos 1 hijo
         if(!actual->izq && actual->der){
           return actual->der;
@@ -137,17 +153,30 @@ nodo_t *_abb_borrar(abb_t* arbol, const char* clave, nodo_t* actual, void** dato
         if(actual->der && actual->izq){
             nodo_t* ext;
             mas_derecha(actual->der , &ext);
-            //free cosas de actual
+            
+            free((char*)actual->clave);
+            if(arbol->destruir_dato){
+                arbol->destruir_dato(actual->dato);
+            }
             actual->clave = ext->clave;
             actual->dato = ext->dato;
-            nodo_destruir(ext);
+            nodo_destruir(arbol->destruir_dato,ext);
             return actual;
         }
     } else if(arbol->cmp(clave,actual->clave) > 0){
+
+        nodo_t* aux = actual->der;
         actual->der = _abb_borrar(arbol,clave,actual->der,dato);
+        if(aux){
+            nodo_destruir(arbol->destruir_dato,aux);
+        }
         return actual;
-    } 
+    }
+    nodo_t* aux = actual->izq;
     actual->izq = _abb_borrar(arbol,clave,actual->izq,dato);
+    if(aux){
+        nodo_destruir(arbol->destruir_dato,aux);
+    }
     return actual;
 }
 
@@ -204,11 +233,7 @@ void _abb_destruir(abb_t* arbol, nodo_t* actual){
 
     _abb_destruir(arbol,actual->izq);
     _abb_destruir(arbol,actual->der);
-    if(arbol->destruir_dato){
-        arbol->destruir_dato(actual->dato);
-    }
-    free(actual->clave);
-    free(actual);
+    nodo_destruir(arbol->destruir_dato,actual);
 
 }
 
@@ -271,30 +296,13 @@ void abb_iter_in_destruir(abb_iter_t* iter){
 int main(void){
     
     abb_t* abb = abb_crear(strcmp,NULL);
-    abb_iter_t* iter = abb_iter_in_crear(abb);
+    //abb_iter_t* iter = abb_iter_in_crear(abb);
     
     int datos[] = {10,5,21,7,15,13,19,17,20,18,16};
     abb_guardar(abb,"i",&datos[0]);
-    abb_guardar(abb,"b",&datos[1]);
+    abb_guardar(abb,"a",&datos[1]);
     abb_guardar(abb,"z",&datos[2]);
-    
-    abb_iter_in_avanzar(iter);
-    abb_iter_in_avanzar(iter);
-    abb_iter_in_avanzar(iter);
-    
-    //const char* actual = abb_iter_in_ver_actual(iter);
-    printf("%d\n", abb_iter_in_al_final(iter));
-    
-    abb_guardar(abb,"d",&datos[3]);
-    abb_guardar(abb,"o",&datos[4]);
-    abb_guardar(abb,"n",&datos[5]);
-    abb_guardar(abb,"w",&datos[6]);
-    abb_guardar(abb,"u",&datos[7]);
-    abb_guardar(abb,"y",&datos[8]);
-    abb_guardar(abb,"v",&datos[9]);
-    abb_guardar(abb,"t",&datos[10]);
-    abb_borrar(abb, "o");
-
+    abb_borrar(abb,"i");
     abb_destruir(abb);
     return 0;
 }*/
