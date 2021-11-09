@@ -27,7 +27,7 @@
 
 /*
  * Realiza una serie de operaciones leídas por entrada estándar.
- 
+ */
 int main(void) {
   size_t tam = 0;
   char *linea = NULL;
@@ -87,4 +87,4 @@ int main(void) {
   free(linea);
   abb_destruir(abb);
   return 0;
-}*/
+}
