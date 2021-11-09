@@ -154,7 +154,7 @@ static void prueba_abb_borrar()
     print_test("Prueba abb insertar clave1", abb_guardar(abb, clave1, valor1));
     print_test("Prueba abb insertar clave2", abb_guardar(abb, clave2, valor2));
     print_test("Prueba abb insertar clave3", abb_guardar(abb, clave3, valor3));
-
+    abb_in_order(abb, print, NULL);
     /* Al borrar cada elemento comprueba que ya no está pero los otros sí. */
     print_test("Prueba abb pertenece clave3, es verdadero", abb_pertenece(abb, clave3));
     print_test("Prueba abb borrar clave3, es valor3", abb_borrar(abb, clave3) == valor3);
@@ -184,7 +184,10 @@ static void prueba_abb_borrar()
 
     abb_destruir(abb);
 }
+/*
+static void prueba_abb_borrar_raiz(){
 
+}*/
 static void prueba_abb_clave_vacia()
 {
     abb_t* abb = abb_crear(strcmp,NULL);
@@ -420,19 +423,19 @@ void pruebas_abb_estudiante()
     prueba_abb_borrar();
     prueba_abb_clave_vacia();
     prueba_abb_valor_null();
-    prueba_abb_volumen(5000, true);
+    prueba_abb_volumen(500, true);
     prueba_abb_iterar();
-    prueba_abb_iterar_volumen(5000);
+    prueba_abb_iterar_volumen(500);
 }
 
 void pruebas_volumen_estudiante(size_t largo)
 {
     prueba_abb_volumen(largo, false);
 }
-
+/*
 #ifndef CORRECTOR
 int main(void){
     pruebas_abb_estudiante();
     return 0;
 }
-#endif
+#endif*/
