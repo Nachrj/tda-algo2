@@ -33,7 +33,7 @@ char* copia_clave(const char *clave){
 }
 
 nodo_t *nodo_crear(const char* clave, void* dato) {
-    nodo_t *nodo = calloc(1,sizeof(nodo_t));
+    nodo_t *nodo = malloc(sizeof(nodo_t));
     if (!nodo) return NULL;
 
     nodo->dato = dato;
@@ -48,14 +48,15 @@ void nodo_destruir(abb_destruir_dato_t destruir_dato, nodo_t* nodo){
     if(destruir_dato){
         destruir_dato(nodo->dato);
     }
-    free((char*)nodo->clave);
+    free(nodo->clave);
     free(nodo);
 }
 
 // *** PRIMITIVAS DEL ABB ***
 abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
-    abb_t* abb = calloc(1,sizeof(abb_t));
+    abb_t* abb = malloc(sizeof(abb_t));
     if(!abb) return NULL;
+    abb->raiz = NULL;
     abb->cmp = cmp;
     abb->destruir_dato = destruir_dato;
     abb->cantidad = 0;
@@ -124,8 +125,8 @@ nodo_t *_abb_borrar(abb_t* arbol, const char* clave, nodo_t* actual, void** dato
             void* dato_sucesor = ext->dato;
             actual->der = _abb_borrar(arbol,clave_sucesor,actual->der,&dato_sucesor);
             free(actual->clave);
-            actual->clave = ext->clave;
-            actual->dato = ext->dato;
+            actual->clave = clave_sucesor;
+            actual->dato = dato_sucesor;
             return actual;
         }
         else{
@@ -203,25 +204,37 @@ void abb_destruir(abb_t *arbol){
 }
 
 // *** PRIMITIVAS DE ITERADOR INTERNO ***
-void _abb_in_order(abb_t* arbol, nodo_t* actual, bool visitar(const char *, void *, void *), void *extra){
+void _abb_in_order(abb_t* arbol, nodo_t* actual, bool visitar(const char *, void *, void *), void *extra, bool* fin){
     if(!actual) return;
-    _abb_in_order(arbol,actual->izq,visitar,extra);
-     if (!visitar(actual->clave,actual->dato,extra)) return;
-    _abb_in_order(arbol,actual->der,visitar,extra);
+    if(*fin) return;
+    _abb_in_order(arbol,actual->izq,visitar,extra,fin);
+    if(*fin) return;
+    if (!visitar(actual->clave,actual->dato,extra)){
+        *fin = true;
+        return;
+    }
+    _abb_in_order(arbol,actual->der,visitar,extra,fin);
 }
 
 void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void *extra){
-    _abb_in_order(arbol,arbol->raiz,visitar,extra);
+    bool fin = false;
+    _abb_in_order(arbol,arbol->raiz,visitar,extra,&fin);
 }
 
 // *** PRIMITIVAS DE ITERADOR EXTERNO ***
+void apilar_izquierdos(nodo_t* actual, pila_t* pila){
+    while(actual){
+        pila_apilar(pila,actual);
+        actual = actual->izq;
+    }
+}
 abb_iter_t *abb_iter_in_crear(const abb_t *arbol){
     abb_iter_t* iter = malloc(sizeof(abb_iter_t));
     if(!iter) return NULL;
     pila_t* pila = pila_crear();
     iter->pila = pila;
     if(arbol->raiz){
-        pila_apilar(iter->pila,arbol->raiz);
+        apilar_izquierdos(arbol->raiz,iter->pila);
     }
     return iter;
 }
@@ -230,10 +243,7 @@ bool abb_iter_in_avanzar(abb_iter_t *iter){
     if(abb_iter_in_al_final(iter)) return false;
     nodo_t* actual = pila_desapilar(iter->pila);
     if(actual->der){
-        pila_apilar(iter->pila,actual->der);
-    }
-    if(actual->izq){
-        pila_apilar(iter->pila,actual->izq);
+        apilar_izquierdos(actual->der,iter->pila);
     }
     return true;
 }

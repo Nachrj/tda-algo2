@@ -154,7 +154,6 @@ static void prueba_abb_borrar()
     print_test("Prueba abb insertar clave1", abb_guardar(abb, clave1, valor1));
     print_test("Prueba abb insertar clave2", abb_guardar(abb, clave2, valor2));
     print_test("Prueba abb insertar clave3", abb_guardar(abb, clave3, valor3));
-    abb_in_order(abb, print, NULL);
     /* Al borrar cada elemento comprueba que ya no está pero los otros sí. */
     print_test("Prueba abb pertenece clave3, es verdadero", abb_pertenece(abb, clave3));
     print_test("Prueba abb borrar clave3, es valor3", abb_borrar(abb, clave3) == valor3);
@@ -163,12 +162,10 @@ static void prueba_abb_borrar()
     print_test("Prueba abb obtener clave3, es NULL", !abb_obtener(abb, clave3));
     print_test("Prueba abb la cantidad de elementos es 2", abb_cantidad(abb) == 2);
 
-    abb_in_order(abb, print, NULL);
 
     print_test("Prueba abb pertenece clave1, es verdadero", abb_pertenece(abb, clave1));
     print_test("Prueba abb borrar clave1, es valor1", abb_borrar(abb, clave1) == valor1);
 
-    abb_in_order(abb, print, NULL);
 
     print_test("Prueba abb borrar clave1, es NULL", !abb_borrar(abb, clave1));
     print_test("Prueba abb pertenece clave1, es falso", !abb_pertenece(abb, clave1));
