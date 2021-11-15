@@ -2,17 +2,15 @@
 #include <string.h> //strcmp
 #include <stdio.h>
 #include <stdlib.h>
+
 #define CAPACIDAD 10
+
 struct heap{
     void** lista;
     size_t cantidad;
     size_t capacidad;
     cmp_func_t cmp;
 };
-
-void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp){
-    return;
-}
 
 void swap(void** lista, int a, int b){
     void* aux = lista[a];
@@ -21,7 +19,7 @@ void swap(void** lista, int a, int b){
 }
 
 bool heap_redimensionar(heap_t* heap, size_t tam_nuevo) {
-    void**datos_nuevo = realloc(heap->lista, tam_nuevo * sizeof(void*));
+    void** datos_nuevo = realloc(heap->lista, tam_nuevo * sizeof(void*));
 
     // Cuando tam_nuevo es 0, es correcto si se devuelve NULL.
     // En toda otra situación significa que falló el realloc.
@@ -32,6 +30,7 @@ bool heap_redimensionar(heap_t* heap, size_t tam_nuevo) {
     heap->capacidad = tam_nuevo;
     return true;
 }
+
 
 void upheap(heap_t* heap, int actual){
     if(actual-1 < 0) return;
@@ -63,6 +62,17 @@ void downheap(heap_t* heap, int actual){
     return;
 }
 
+void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp){
+    heap_t* heap_aux = heap_crear(cmp);
+    for(int i = 0; i < cant; i++){
+        heap_encolar(heap_aux,elementos[i]);
+    }
+    for(int i = 0; i < cant; i++){
+        elementos[i] = heap_desencolar(heap_aux);
+    }
+    heap_destruir(heap_aux,NULL);
+}
+
 heap_t *heap_crear(cmp_func_t cmp){
     heap_t* heap = calloc(1,sizeof(heap_t));
     void** lista = calloc(CAPACIDAD,sizeof(void*));
@@ -73,11 +83,22 @@ heap_t *heap_crear(cmp_func_t cmp){
 }
 
 heap_t *heap_crear_arr(void *arreglo[], size_t n, cmp_func_t cmp){
-    return NULL;
+    heap_t* heap = calloc(1,sizeof(heap_t));
+    heap->lista = arreglo;
+    heap->capacidad = CAPACIDAD;
+    downheap(heap,0); // Debería ser el ultimo al primero, pero no funciona así downheap
+    heap->cmp = cmp;
+    return heap;
 }
 
 void heap_destruir(heap_t *heap, void (*destruir_elemento)(void *e)){
-    return;
+    if(destruir_elemento) {
+        for (int i = 0; i < heap->cantidad; i++) {
+            destruir_elemento(heap->lista[i]);
+        }
+    }
+    free(heap->lista);
+    free(heap);
 }
 
 size_t heap_cantidad(const heap_t *heap){
@@ -135,11 +156,18 @@ int main(void){
     int b = 3;
     int c = 2;
     int d = 5;
-    heap_encolar(heap,&a);
+    void** arreglo = calloc(4,sizeof(void*));
+    arreglo[0] = &a;
+    arreglo[1] = &b;
+    arreglo[2] = &c;
+    arreglo[3] = &d;
+    heap_crear_arr(arreglo,4,intcmp);
+    /*heap_encolar(heap,&a);
     heap_encolar(heap,&b);
     heap_encolar(heap,&c);
     heap_encolar(heap,&d);
-    heap_desencolar(heap);
+    heap_desencolar(heap);*/
     printf("%d",*(int*)heap->lista[0]);
+    heap_destruir(heap,NULL);
     return 0;
 }
