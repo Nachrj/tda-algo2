@@ -45,48 +45,69 @@ void upheap(heap_t* heap, int actual){
     return;
 }
 
-void downheap(heap_t* heap, int actual){
+void downheap(void* arreglo[], cmp_func_t cmp, size_t cant, int actual){
     int hijo_izq = (actual*2)+1;
     int hijo_der = (actual*2)+2;
-    if(hijo_izq > heap_cantidad(heap)-1 || hijo_der > heap_cantidad(heap)-1){
+    if(hijo_izq > cant-1 || hijo_der > cant-1){
         return;
     }
-    int hijo_max = heap->cmp(heap->lista[hijo_izq],heap->lista[hijo_der]) > 0 ? hijo_izq : hijo_der;
-    if(heap->cmp(heap->lista[hijo_max],heap->lista[actual]) <= 0){
+    int hijo_max = cmp(arreglo[hijo_izq],arreglo[hijo_der]) > 0 ? hijo_izq : hijo_der;
+    if(cmp(arreglo[hijo_max],arreglo[actual]) <= 0){
         return;
     }
-    if(heap->cmp(heap->lista[hijo_max],heap->lista[actual]) > 0){
-        swap(heap->lista,actual,hijo_max);
-        return downheap(heap,hijo_max);
+    if(cmp(arreglo[hijo_max],arreglo[actual]) > 0){
+        swap(arreglo,actual,hijo_max);
+        return downheap(arreglo, cmp, cant, hijo_max);
     }
     return;
 }
 
+void heapify(void* elementos[], size_t cant, cmp_func_t cmp){
+    for(size_t i = cant-1; i >= 0; i--){
+        downheap(elementos, cmp, cant, i);
+    }
+}
+
 void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp){
-    heap_t* heap_aux = heap_crear(cmp);
-    for(int i = 0; i < cant; i++){
-        heap_encolar(heap_aux,elementos[i]);
+    // Le damos forma de heap al arreglo (heapify)
+    heapify(elementos, cant, cmp);
+
+    for (int i = cant - 1; i < cant; i++) {
+        // Swapeamos primero con el utlimo
+        swap(elementos, 0, cant-1);
+        downheap(elementos, cmp, cant, 0);
     }
-    for(int i = 0; i < cant; i++){
-        elementos[i] = heap_desencolar(heap_aux);
-    }
-    heap_destruir(heap_aux,NULL);
 }
 
 heap_t *heap_crear(cmp_func_t cmp){
     heap_t* heap = calloc(1,sizeof(heap_t));
+    if (!heap) return NULL;
     void** lista = calloc(CAPACIDAD,sizeof(void*));
+    if (!lista) {
+        free(heap);
+        return NULL;
+    }
     heap->capacidad = CAPACIDAD;
     heap->lista = lista;
     heap->cmp = cmp;
     return heap;
 }
 
+void** copia_arreglo(void* arreglo[] , size_t cant) {
+    void** lista = calloc(cant,sizeof(void*));
+
+    for (int i = 0; i < cant; i++) {
+        lista[i] = arreglo[i];
+    }
+
+    return lista;
+}
+
 heap_t *heap_crear_arr(void *arreglo[], size_t n, cmp_func_t cmp){
     heap_t* heap = calloc(1,sizeof(heap_t));
-    heap->lista = arreglo;
-    heap->capacidad = CAPACIDAD;
-    downheap(heap,0); // Debería ser el ultimo al primero, pero no funciona así downheap
+    heap->capacidad = n*2; // Ver respuesta en Slack sobre capacidad
+    heap->lista = copia_arreglo(arreglo, n);
+    heapify(arreglo,0,cmp);
     heap->cmp = cmp;
     return heap;
 }
@@ -109,6 +130,10 @@ bool heap_esta_vacio(const heap_t *heap){
     return !heap->cantidad;
 }
 
+void *heap_ver_max(const heap_t *heap){
+    return heap->lista[0];
+}
+
 bool heap_encolar(heap_t *heap, void *elem){
     int i = (int)heap_cantidad(heap);
     heap->lista[i] = elem;
@@ -122,16 +147,12 @@ bool heap_encolar(heap_t *heap, void *elem){
     return true;
 }
 
-void *heap_ver_max(const heap_t *heap){
-    return heap->lista[0];
-}
-
 void *heap_desencolar(heap_t *heap){
     void* dato = heap->lista[0];
     heap->lista[0] = heap->lista[heap_cantidad(heap)-1];
     heap->lista[heap_cantidad(heap)-1] = NULL;
     heap->cantidad--;
-    downheap(heap,0);
+    downheap(heap->lista, heap->cmp, heap->cantidad,0);
     if(heap->cantidad <= heap->capacidad/2){
         if(!heap_redimensionar(heap, heap->capacidad/2)){
             return false;
@@ -161,13 +182,14 @@ int main(void){
     arreglo[1] = &b;
     arreglo[2] = &c;
     arreglo[3] = &d;
-    heap_crear_arr(arreglo,4,intcmp);
-    /*heap_encolar(heap,&a);
+    heapify(arreglo,4,intcmp);
+    /*heap_crear_arr(arreglo,4,intcmp);
+    heap_encolar(heap,&a);
     heap_encolar(heap,&b);
     heap_encolar(heap,&c);
     heap_encolar(heap,&d);
     heap_desencolar(heap);*/
-    printf("%d",*(int*)heap->lista[0]);
+    printf("%d",*(int*)arreglo[0]);
     heap_destruir(heap,NULL);
     return 0;
 }
