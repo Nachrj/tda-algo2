@@ -159,6 +159,7 @@ bool heap_encolar(heap_t *heap, void *elem){
 }
 
 void *heap_desencolar(heap_t *heap){
+    if (heap_esta_vacio(heap)) return NULL;
     void* dato = heap->lista[0];
     heap->lista[0] = heap->lista[heap_cantidad(heap)-1];
     heap->lista[heap_cantidad(heap)-1] = NULL;
@@ -176,12 +177,7 @@ void pruebas_heap_estudiante(void){
 
 }
 
-int intcmp(const void* a, const void* b){
-    if(*(int*)a > *(int*)b) return 1;
-    if(*(int*)a <*(int*)b) return -1;
-    return 0;
-}
-
+/*
 int main(void){
     int a = 3;
     int b = 1;
@@ -202,15 +198,15 @@ int main(void){
     arreglo[7] = &h;
     
     heap_t* heap = heap_crear_arr(arreglo,8,intcmp);
-    /*heap_crear_arr(arreglo,4,intcmp);
+    heap_crear_arr(arreglo,4,intcmp);
     heap_encolar(heap,&a);
     heap_encolar(heap,&b);
     heap_encolar(heap,&c);
     heap_encolar(heap,&d);
-    heap_desencolar(heap);*/
+    heap_desencolar(heap);
     for(int i = 0; i < 8; i++){
         printf("%d\n",*(int*)heap->lista[i]);
     }
     heap_destruir(heap,NULL);
     return 0;
-}
+}*/
