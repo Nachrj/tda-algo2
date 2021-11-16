@@ -48,10 +48,17 @@ void upheap(heap_t* heap, int actual){
 void downheap(void* arreglo[], cmp_func_t cmp, size_t cant, int actual){
     int hijo_izq = (actual*2)+1;
     int hijo_der = (actual*2)+2;
-    if(hijo_izq > cant-1 || hijo_der > cant-1){
+    int hijo_max;
+    if(hijo_izq > cant-1 && hijo_der > cant-1){
         return;
+    } else if(hijo_izq > cant-1 && hijo_der <= cant-1){
+        hijo_max = hijo_der;
+    } else if(hijo_izq <= cant-1 && hijo_der > cant-1){
+        hijo_max = hijo_izq;
+    } else{
+        hijo_max = cmp(arreglo[hijo_izq],arreglo[hijo_der]) > 0 ? hijo_izq : hijo_der;
     }
-    int hijo_max = cmp(arreglo[hijo_izq],arreglo[hijo_der]) > 0 ? hijo_izq : hijo_der;
+    
     if(cmp(arreglo[hijo_max],arreglo[actual]) <= 0){
         return;
     }
@@ -63,7 +70,7 @@ void downheap(void* arreglo[], cmp_func_t cmp, size_t cant, int actual){
 }
 
 void heapify(void* elementos[], size_t cant, cmp_func_t cmp){
-    for(size_t i = cant-1; i >= 0; i--){
+    for(int i = (int)cant-1; i >= 0; i--){
         downheap(elementos, cmp, cant, i);
     }
 }
@@ -71,11 +78,10 @@ void heapify(void* elementos[], size_t cant, cmp_func_t cmp){
 void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp){
     // Le damos forma de heap al arreglo (heapify)
     heapify(elementos, cant, cmp);
-
-    for (int i = cant - 1; i < cant; i++) {
-        // Swapeamos primero con el utlimo
-        swap(elementos, 0, cant-1);
-        downheap(elementos, cmp, cant, 0);
+    for (int i = (int)cant-1; i > 0; i--) {
+        // Swapeamos primero con el ultimo
+        swap(elementos, 0, i);
+        downheap(elementos, cmp, i, 0);
     }
 }
 
@@ -105,9 +111,14 @@ void** copia_arreglo(void* arreglo[] , size_t cant) {
 
 heap_t *heap_crear_arr(void *arreglo[], size_t n, cmp_func_t cmp){
     heap_t* heap = calloc(1,sizeof(heap_t));
-    heap->capacidad = n*2; // Ver respuesta en Slack sobre capacidad
+    if(n > CAPACIDAD){
+        heap->capacidad = n*2;
+    } else {
+        heap->capacidad = CAPACIDAD;
+    }
+    heap->cantidad = n;
+    heapify(arreglo,n,cmp);
     heap->lista = copia_arreglo(arreglo, n);
-    heapify(arreglo,0,cmp);
     heap->cmp = cmp;
     return heap;
 }
@@ -172,24 +183,34 @@ int intcmp(const void* a, const void* b){
 }
 
 int main(void){
-    heap_t* heap = heap_crear(intcmp);
-    int a = 1;
-    int b = 3;
+    int a = 3;
+    int b = 1;
     int c = 2;
-    int d = 5;
-    void** arreglo = calloc(4,sizeof(void*));
+    int d = 10;
+    int e = 7;
+    int f = 5;
+    int g = 12;
+    int h = 4;
+    void** arreglo = calloc(8,sizeof(void*));
     arreglo[0] = &a;
     arreglo[1] = &b;
     arreglo[2] = &c;
     arreglo[3] = &d;
-    heapify(arreglo,4,intcmp);
+    arreglo[4] = &e;
+    arreglo[5] = &f;
+    arreglo[6] = &g;
+    arreglo[7] = &h;
+    
+    heap_t* heap = heap_crear_arr(arreglo,8,intcmp);
     /*heap_crear_arr(arreglo,4,intcmp);
     heap_encolar(heap,&a);
     heap_encolar(heap,&b);
     heap_encolar(heap,&c);
     heap_encolar(heap,&d);
     heap_desencolar(heap);*/
-    printf("%d",*(int*)arreglo[0]);
+    for(int i = 0; i < 8; i++){
+        printf("%d\n",*(int*)heap->lista[i]);
+    }
     heap_destruir(heap,NULL);
     return 0;
 }
