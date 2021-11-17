@@ -152,30 +152,32 @@ void *heap_ver_max(const heap_t *heap){
 }
 
 bool heap_encolar(heap_t *heap, void *elem){
-    int i = (int)heap_cantidad(heap);
-    heap->lista[i] = elem;
-    heap->cantidad++;
-    upheap(heap,i);
     if(heap->cantidad == heap->capacidad){
         if(!heap_redimensionar(heap, heap->capacidad*2)){
             return false;
         }
     }
+    int i = (int)heap_cantidad(heap);
+    heap->lista[i] = elem;
+    heap->cantidad++;
+    upheap(heap,i);
+    
     return true;
 }
 
 void *heap_desencolar(heap_t *heap){
     if (heap_esta_vacio(heap)) return NULL;
+    if(heap->cantidad <= heap->capacidad/4){
+        if(!heap_redimensionar(heap, heap->capacidad/2)){
+            return false;
+        }
+    }
     void* dato = heap->lista[0];
     heap->lista[0] = heap->lista[heap_cantidad(heap)-1];
     heap->lista[heap_cantidad(heap)-1] = NULL;
     heap->cantidad--;
     if(heap_esta_vacio(heap)) return dato;
     downheap(heap->lista, heap->cmp, heap->cantidad,0);
-    if(heap->cantidad <= heap->capacidad/4){
-        if(!heap_redimensionar(heap, heap->capacidad/2)){
-            return false;
-        }
-    }
+    
     return dato;
 }

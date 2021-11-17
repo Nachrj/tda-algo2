@@ -75,11 +75,11 @@ static void prueba_heap_desencolar(){
     int f = 9;
     int g = 5;
     int h = 10;
-    int i = 8;
+    int ii = 8;
     int j = 1;
     int k = 11;
     int l = 12;
-    void* claves[] = {&a, &b, &c, &d, &e, &f, &g, &h, &i, &j, &k, &l};
+    void* claves[] = {&a, &b, &c, &d, &e, &f, &g, &h, &ii, &j, &k, &l};
     heap_encolar(heap, claves[0]);
     print_test("Desencolar heap de un elemento lo deja como uno vacio",heap_desencolar(heap) == claves[0] && heap_cantidad(heap) == 0);
     heap_encolar(heap, claves[0]);
@@ -94,7 +94,7 @@ static void prueba_heap_desencolar(){
     heap_encolar(heap, claves[9]);
     heap_encolar(heap, claves[10]);
     heap_encolar(heap, claves[11]);
-    void* desencolado[] = {&l, &k, &h, &f, &i, &e, &d, &g, &b, &a, &c, &j};
+    void* desencolado[] = {&l, &k, &h, &f, &ii, &e, &d, &g, &b, &a, &c, &j};
     bool ok = true;
     for(int i = 0; i < 12; i++){
         void* dato = heap_desencolar(heap);
@@ -116,7 +116,7 @@ static void prueba_heap_sort(){
     int g = 5;
     void* claves[] = {&a, &b, &c, &d, &e, &f, &g};
     void* claves_ordenado[] = {&c, &a, &b, &g, &d, &e, &f};
-    int n = 7;
+    size_t n = 7;
     heap_sort(claves, n, intcmp);
     bool ok = true;
     for(int i = 0; i < n; i++){
@@ -136,7 +136,7 @@ static void prueba_crear_arr(){
     int f = 9;
     int g = 5;
     void* claves[] = {&a, &b, &c, &d, &e, &f, &g};
-    int n = 7;
+    size_t n = 7;
     heap_t* heap_arr = heap_crear_arr(claves,n,intcmp);
     heap_encolar(heap,claves[0]);
     heap_encolar(heap,claves[1]);
