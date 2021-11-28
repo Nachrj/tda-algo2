@@ -23,14 +23,13 @@ int publicacion_cantidad_likes(publicacion_t* publicacion) {
     return publicacion->cant_likes;
 }
 
-// A CABIAR ESTA FUNCION PARA QUE PRINTEE LOS NOMBRES
+// A CAMBIAR ESTA FUNCION PARA QUE PRINTEE LOS NOMBRES
 bool imprimir_likes(const char* clave, void* dato, void* extra) {
-    printf("%d\n", *(char*)clave);
+    printf("%s\n", (char**)clave);
     return true;
 }
 
 void mostrar_likes(publicacion_t* publicacion) {
     printf("El post tiene %d likes:\n",publicacion->cant_likes);
     abb_in_order(publicacion->likes, imprimir_likes, NULL);
-    printf("\n");
 }
