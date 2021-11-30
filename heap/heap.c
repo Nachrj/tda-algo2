@@ -31,7 +31,6 @@ bool heap_redimensionar(heap_t* heap, size_t tam_nuevo) {
     return true;
 }
 
-
 void upheap(heap_t* heap, int actual){
     if(actual-1 < 0) return;
     int padre = (actual-1)/2;

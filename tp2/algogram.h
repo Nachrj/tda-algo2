@@ -3,4 +3,4 @@
 
 struct algogram;
 
-typedef struct algogram algorgram_t;
+typedef struct algogram algogram_t;
