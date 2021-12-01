@@ -25,3 +25,10 @@ usuario_t* usuario_crear(char* nombre, int id) {
 void* ver_proximo_post_feed(usuario_t* usuario) {
     return heap_desencolar(usuario->feed);
 }
+
+void usuario_destruir(usuario_t* usuario) {
+    if (!usuario) return;
+    free(usuario->nombre);
+    heap_destruir(usuario->feed, publicacion_afinidad_destruir);
+    free(usuario);
+}

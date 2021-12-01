@@ -20,7 +20,7 @@ algogram_t* algogram_crear(hash_t* usuarios) {
     if (!algogram) return NULL;
     algogram->usuarios = usuarios;
     algogram->usuario_actual = NULL;
-    algogram->hash_publicaciones = hash_crear(NULL);
+    algogram->hash_publicaciones = hash_crear(publicacion_destruir);
     return algogram;
 }
 
@@ -72,4 +72,12 @@ bool likear_publicacion(algorgram_t* algogram, usuario_t* usuario, int id_public
     // En el caso de que no guarde el usuario, devolvemos false.
     printf("Error: Usuario no loggeado o Post inexistente\n");
     return false;
+}
+
+void algogram_destruir(algogram_t* algogram) {
+    if (!algogram) return;
+    hash_destruir(algogram->usuarios);
+    usuario_destruir(usuario_actual);
+    hash_destruir(algogram->hash_publicaciones);
+    free(algogram);
 }

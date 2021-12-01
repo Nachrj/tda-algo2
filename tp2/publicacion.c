@@ -22,12 +22,18 @@ publicacion_afinidad_t* publicacion_afinidad_crear(publicacion_t* publicacion, i
     return publicacion_afinidad
 }
 
+void publicacion_afinidad_destruir(publicacion_afinidad_t* publicacion_afinidad) {
+    if (!publicacion_afinidad) return;
+    publicacion_destruir(publicacion_afinidad->publicacion);
+    free(publicacion_afinidad);
+}
+
 // PRIMITIVAS PUBLICACIONES
 publicacion_t* publicacion_crear(usuario_t* usuario_creador, char* texto, int id) {
     publicacion_t* publicacion = malloc(sizeof(publicacion_t));
     if (!publicacion) return NULL;
     publicacion->usuario_creador = usuario_creador;
-    publicacion->likes = abb_crear(strcmp, NULL);
+    publicacion->likes = abb_crear(strcmp, free);
     publicacion->texto = strdup(texto);
     publicacion->id = id;
     return publicacion;
@@ -35,7 +41,7 @@ publicacion_t* publicacion_crear(usuario_t* usuario_creador, char* texto, int id
 
 bool agregar_usuario_likes(publicacion_t* publicacion, usuario_t* usuario) {
     if (!publicacion || !usuario) return false;
-    return abb_guardar(publicacion->likes, usuario->nombre, usuario);
+    return abb_guardar(publicacion->likes, strdup(usuario->nombre), usuario);
 }
 
 int publicacion_cantidad_likes(publicacion_t* publicacion) {
@@ -50,5 +56,12 @@ bool imprimir_likes(const char* clave, void* dato, void* extra) {
 void mostrar_likes(publicacion_t* publicacion) {
     printf("El post tiene %d likes:\n",publicacion->cant_likes);
     abb_in_order(publicacion->likes, imprimir_likes, NULL);
+}
+
+void publicacion_destruir(publicacion_t* publicacion) {
+    if (!publicacion) return;
+    free(publicacion->texto);
+    abb_destruir(publicacion->likes);
+    free(publicacion);
 }
 
