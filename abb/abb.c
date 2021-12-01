@@ -64,13 +64,6 @@ abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
 }
 
 bool _abb_guardar(abb_t *arbol, const char *clave, void *dato, nodo_t* actual){
-    // Si el arbol no tiene raiz, el nodo a ingresar se convierte en su raiz
-    if(!arbol->raiz){
-        arbol->raiz = nodo_crear(clave,dato);
-        arbol->cantidad++;
-        return true;
-    }
-
     if(!actual) return false;
     
     // Si la clave ya existe, se sobreescribe el dato
@@ -85,7 +78,8 @@ bool _abb_guardar(abb_t *arbol, const char *clave, void *dato, nodo_t* actual){
     // Caso general
     if(arbol->cmp(clave,actual->clave)>0){
         if(!actual->der){
-            actual->der = nodo_crear(clave,dato);
+            actual->der = nodo_crear(clave, dato);
+            if(!actual->der) return false;
             arbol->cantidad++;
             return true;
         }
@@ -94,6 +88,7 @@ bool _abb_guardar(abb_t *arbol, const char *clave, void *dato, nodo_t* actual){
     else{
         if(!actual->izq){
             actual->izq = nodo_crear(clave,dato);
+            if (!actual->izq) return false;
             arbol->cantidad++;
             return true;
         }
@@ -102,6 +97,14 @@ bool _abb_guardar(abb_t *arbol, const char *clave, void *dato, nodo_t* actual){
 }
 
 bool abb_guardar(abb_t *arbol, const char *clave, void *dato){
+    // Si el arbol no tiene raiz, el nodo a ingresar se convierte en su raiz
+    if(!arbol->raiz){
+        arbol->raiz = nodo_crear(clave, dato);
+        if (!arbol->raiz) return false;
+        arbol->cantidad++;
+        return true;
+    }
+    
     if (!_abb_guardar(arbol,clave,dato,arbol->raiz)) return false;
     return true;
 }
@@ -222,16 +225,19 @@ void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void
 }
 
 // *** PRIMITIVAS DE ITERADOR EXTERNO ***
-void apilar_izquierdos(nodo_t* actual, pila_t* pila){
+bool apilar_izquierdos(nodo_t* actual, pila_t* pila){
     while(actual){
-        pila_apilar(pila,actual);
+        if (!pila_apilar(pila,actual)) return false;
         actual = actual->izq;
     }
+    return true;
 }
+
 abb_iter_t *abb_iter_in_crear(const abb_t *arbol){
     abb_iter_t* iter = malloc(sizeof(abb_iter_t));
     if(!iter) return NULL;
     pila_t* pila = pila_crear();
+    if (!pila) return NULL;
     iter->pila = pila;
     if(arbol->raiz){
         apilar_izquierdos(arbol->raiz,iter->pila);
@@ -243,7 +249,7 @@ bool abb_iter_in_avanzar(abb_iter_t *iter){
     if(abb_iter_in_al_final(iter)) return false;
     nodo_t* actual = pila_desapilar(iter->pila);
     if(actual->der){
-        apilar_izquierdos(actual->der,iter->pila);
+        return apilar_izquierdos(actual->der,iter->pila);
     }
     return true;
 }
@@ -266,29 +272,3 @@ bool print_(const char* clave, void* dato, void* extra) {
     printf("%s\n", (char*)clave);
     return true;
 }
-/*
-int main(void){
-    
-    abb_t* abb = abb_crear(strcmp,NULL);
-    //abb_iter_t* iter = abb_iter_in_crear(abb);
-    
-    int datos[] = {36,64,1,27,58,59,50,79,15,25,32};
-    
-    abb_guardar(abb,"36",&datos[0]);
-    
-    abb_guardar(abb,"64",&datos[1]);
-    abb_guardar(abb,"01",&datos[2]);
-    abb_guardar(abb,"27",&datos[3]);
-    abb_guardar(abb,"58",&datos[4]);
-    abb_guardar(abb,"59",&datos[5]);
-    abb_guardar(abb,"50",&datos[6]);
-    abb_guardar(abb,"79",&datos[7]);
-    abb_guardar(abb,"15",&datos[8]);
-    abb_guardar(abb,"25",&datos[9]);
-    abb_guardar(abb,"32",&datos[10]);
-    
-    abb_borrar(abb,"36");
-    printf("%p\n",abb->raiz);
-    abb_destruir(abb);
-    return 0;
-}*/
