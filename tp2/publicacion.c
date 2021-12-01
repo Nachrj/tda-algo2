@@ -43,7 +43,7 @@ int publicacion_cantidad_likes(publicacion_t* publicacion) {
 }
 
 bool imprimir_likes(const char* clave, void* dato, void* extra) {
-    printf("%s\n", (char**)clave);
+    printf("%s\n", (char*)clave);
     return true;
 }
 
