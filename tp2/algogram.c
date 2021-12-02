@@ -3,44 +3,52 @@
 #include "publicacion.h"
 #include "./tdas_aux/hash.h"
 #include "./tdas_aux/lista.h"
+#include "./tdas_aux/heap.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 struct algogram {
     hash_t* usuarios;
     usuario_t* usuario_actual;
     hash_t* hash_publicaciones;
 };
-
+_publicacion_destruir(void* publicacion){
+    publicacion_destruir(publicacion);
+}
 // PRIMITIVAS DE ALGOGRAM
 algogram_t* algogram_crear(hash_t* usuarios) {
     algogram_t* algogram = malloc(sizeof(algogram_t));
     if (!algogram) return NULL;
     algogram->usuarios = usuarios;
     algogram->usuario_actual = NULL;
-    algogram->hash_publicaciones = hash_crear(publicacion_destruir);
+    algogram->hash_publicaciones = hash_crear(_publicacion_destruir);
     return algogram;
+}
+
+int encontrar_afinidad(usuario_t* usuario_creador, usuario_t* usuario_actual) {
+    return 1/(abs(usuario_get_id(usuario_creador) - usuario_get_id(usuario_actual)));
 }
 
 bool postear_publicacion(algogram_t* algogram, usuario_t* usuario_creador, publicacion_t* publicacion) {
     if (!usuario_creador || !publicacion || !algogram) return false;
     
     // Agregar la publicacion a la lista de publicaciones totales
-    hash_guardar(usuario_creador->lista_publicaciones, publicacion);
+    hash_guardar(algogram->hash_publicaciones, (char*)publicacion_get_id(publicacion),publicacion);
 
     // Agregar la publicacion a la feed de cada usuario
     hash_iter_t* iter = hash_iter_crear(algogram->usuarios);
 
     while (!hash_iter_al_final(iter)) {
-        usuario_t* usuario_actual = hash_iter_ver_actual(iter);
+        usuario_t* usuario_actual = (usuario_t*)hash_iter_ver_actual(iter);
         // Encuentro primero la afinidad entre los usuarios
         int afinidad = encontrar_afinidad(usuario_creador, usuario_actual);
 
-        if (strcmp(usuario_actual.nombre, usuario_creador.nombre) != 0) {
+        if (strcmp(usuario_get_nombre(usuario_actual), usuario_get_nombre(usuario_creador)) != 0) {
             // Encolo la publicación con la afinidad entre usuarios (publicacion_afinidad) para compararlo.
-            heap_encolar(usuario->feed, publicacion_afinidad_crear(publicacion, afinidad));
+            heap_encolar(usuario_get_feed(usuario_creador), &publicacion_afinidad_crear(publicacion, afinidad));
         }
         hash_iter_avanzar(iter);
     }
@@ -49,15 +57,14 @@ bool postear_publicacion(algogram_t* algogram, usuario_t* usuario_creador, publi
     return true;
 }
 
-int encontrar_afinidad(usuario_t* usuario_creador, usuario_t* usuario_actual) {
-    return 1/(abs(usuario_creador->id - usuario_actual->id));
-}
 
 
-bool likear_publicacion(algorgram_t* algogram, usuario_t* usuario, int id_publicacion) {
-    if (!usuario_liker || !publicacion || !algogram) return false;
 
-    // Conseguimos el post y lo likeamos
+bool likear_publicacion(algogram_t* algogram, usuario_t* usuario, publicacion_t* publicacion) {
+    if (!usuario || !publicacion || !algogram) return false;
+
+    
+    /* Conseguimos el post y lo likeamos
     lista_iter_t* iter = lista_iter_crear(algogram->lista_publicaciones);
 
     while (!lista_iter_al_final(iter)) {
@@ -67,7 +74,7 @@ bool likear_publicacion(algorgram_t* algogram, usuario_t* usuario, int id_public
             printf("Post likeado\n");
             return agregar_usuario_likes(publicacion, usuario);
         }
-    }
+    }*/
 
     // En el caso de que no guarde el usuario, devolvemos false.
     printf("Error: Usuario no loggeado o Post inexistente\n");
@@ -77,7 +84,7 @@ bool likear_publicacion(algorgram_t* algogram, usuario_t* usuario, int id_public
 void algogram_destruir(algogram_t* algogram) {
     if (!algogram) return;
     hash_destruir(algogram->usuarios);
-    usuario_destruir(usuario_actual);
+    usuario_destruir(algogram->usuario_actual);
     hash_destruir(algogram->hash_publicaciones);
     free(algogram);
 }

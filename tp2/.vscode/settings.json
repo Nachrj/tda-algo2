@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "usuario.h": "c",
+        "heap.h": "c"
+    }
+}
