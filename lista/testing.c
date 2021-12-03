@@ -1,5 +1,6 @@
 #include "testing.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <unistd.h> // isatty
 #define ANSI_COLOR_LGH_RED	   "\x1b[1m\x1b[31m"

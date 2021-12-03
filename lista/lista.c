@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdio.h>
+
 typedef struct nodo nodo_t;
 
 struct nodo {

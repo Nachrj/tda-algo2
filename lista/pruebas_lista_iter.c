@@ -2,6 +2,7 @@
 #include "testing.h"
 #include "pila.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 static void pruebas_lista_vacia(){
     printf("--- INICIO DE PRUEBAS lista VACIA ---\n");

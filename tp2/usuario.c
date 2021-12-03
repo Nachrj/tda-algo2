@@ -7,10 +7,10 @@ struct usuario {
     int id;
 };
 
-typedef struct publicacion_afinidad {
+struct publicacion_afinidad {
     publicacion_t* publicacion;
     int afinidad;
-} publicacion_afinidad_t;
+};
 
 // PRIMITIVAS PUBLICACION CON AFINIDAD
 publicacion_afinidad_t* publicacion_afinidad_crear(publicacion_t* publicacion, int afinidad) {
