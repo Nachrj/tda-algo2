@@ -115,6 +115,7 @@ lista_iter_t* buscar_elemento(const hash_t* hash, const char* clave){
         }
         lista_iter_avanzar(iter);
     }
+    lista_iter_destruir(iter);
     return NULL;
 }
 
