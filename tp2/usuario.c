@@ -57,9 +57,12 @@ heap_t* usuario_get_feed(usuario_t* usuario){
     return usuario->feed;
 }
 
+void _publicacion_afinidad_destruir(void* publicacion){
+    publicacion_afinidad_destruir(publicacion);
+}
 void usuario_destruir(usuario_t* usuario) {
     if (!usuario) return;
     free(usuario->nombre);
-    heap_destruir(usuario->feed, publicacion_afinidad_destruir);
+    heap_destruir(usuario->feed, _publicacion_afinidad_destruir);
     free(usuario);
 }

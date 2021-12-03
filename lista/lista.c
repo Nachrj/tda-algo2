@@ -49,7 +49,7 @@ lista_iter_t *lista_iter_crear(lista_t *lista) {
 }
 
 bool lista_iter_avanzar(lista_iter_t *iter) {
-    if(lista_iter_al_final(iter) || lista_iter_al_final(iter)){
+    if(lista_iter_al_final(iter)){
         return false;
     }
     iter->anterior = iter->actual;
@@ -151,14 +151,14 @@ lista_t *lista_crear(void) {
 }
 
 bool lista_esta_vacia(const lista_t *lista) {
-    return !lista->largo;
+    return lista->largo == 0;
 }
 
 bool lista_insertar_primero(lista_t *lista, void *dato) {
     nodo_t *nodo = nodo_crear(dato);
-
+    if(!nodo) return false;
     // En el caso de insertar a lista vacia
-    if (!lista->largo) {
+    if (lista_esta_vacia(lista)) {
         lista->primero = nodo;
         lista->ultimo = nodo;
         nodo->prox = NULL;
@@ -174,9 +174,9 @@ bool lista_insertar_primero(lista_t *lista, void *dato) {
 
 bool lista_insertar_ultimo(lista_t *lista, void *dato) {
     nodo_t *nodo = nodo_crear(dato);
-
+    if(!nodo) return false;
     // En el caso de insertar a lista vacia
-    if (!lista->largo) {
+    if (lista_esta_vacia(lista)) {
         lista->primero = nodo;
         lista->ultimo = nodo;
         nodo->prox = NULL;

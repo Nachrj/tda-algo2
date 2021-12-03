@@ -1,7 +1,11 @@
+#define _POSIX_C_SOURCE 200809L
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include "usuario.h"
+
 struct publicacion;
 typedef struct publicacion publicacion_t;
 
@@ -12,4 +16,5 @@ int publicacion_cantidad_likes(publicacion_t* publicacion);
 bool imprimir_likes(const char* clave, void* dato, void* extra);
 void mostrar_likes(publicacion_t* publicacion);
 int publicacion_get_id(publicacion_t* publicacion);
+char* publicacion_get_texto(publicacion_t* publicacion);
 void publicacion_destruir(publicacion_t* publicacion);

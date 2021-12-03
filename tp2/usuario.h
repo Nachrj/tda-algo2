@@ -2,9 +2,10 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include "./tdas_aux/heap.h"
-struct usuario;
 
+struct usuario;
 typedef struct usuario usuario_t;
+
 usuario_t* usuario_crear(char* nombre, int id);
 void* ver_proximo_post_feed(usuario_t* usuario);
 void usuario_destruir(usuario_t* usuario);

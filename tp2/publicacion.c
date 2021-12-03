@@ -1,8 +1,8 @@
+#define _POSIX_C_SOURCE 200809L
 #include "usuario.h"
 #include "./tdas_aux/abb.h"
 #include "publicacion.h"
 #include <string.h>
-
 
 struct publicacion {
     usuario_t* usuario_creador;
@@ -46,6 +46,9 @@ int publicacion_get_id(publicacion_t* publicacion){
     return publicacion->id;
 }
 
+char* publicacion_get_texto(publicacion_t* publicacion){
+    return publicacion->texto;
+}
 void publicacion_destruir(publicacion_t* publicacion) {
     if (!publicacion) return;
     free(publicacion->texto);

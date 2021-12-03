@@ -114,7 +114,22 @@ static void prueba_lista_insertar_volumen(void) {
 void _pila_destruir(void *pila) {
     pila_destruir(pila);
 }
+static void prueba_destruir_free(void){
+    printf("\n--- INICIO PRUEBA DE DESTRTUIR CON FREE ---\n");
+    // Declaro las variables a utilizar
+    char* valor1 = malloc(sizeof(char*));
+    char* valor2 = malloc(sizeof(char*));
+    lista_t *lista = lista_crear();
 
+    // Inicio pruebas pila dentro de lista
+    print_test("Pruebo insertar valor1, devuelve true", lista_insertar_ultimo(lista, valor1));
+    print_test("Pruebo insertar valor1, devuelve true", lista_insertar_ultimo(lista, valor2));
+
+    print_test("Pruebo borrar, devuelve pila", lista_borrar_primero(lista) == valor1);
+    free(valor1);
+    print_test("Veo si esta vacia con pila adentro, devuelve false", !lista_esta_vacia(lista));
+    lista_destruir(lista, free);
+}
 static void prueba_pila_dentro_de_lista(void) {
     printf("\n--- INICIO PRUEBA DE PILA DENTRO DE lista ---\n");
 
@@ -301,6 +316,7 @@ void pruebas_lista_estudiante(){
     pruebas_iter_externos_funciones_basicas();
     pruebas_iter_externos_volumen();
     prueba_pila_dentro_de_lista();
+    prueba_destruir_free();
 }
 #ifndef CORRECTOR  // Para que no dé conflicto con el main() del corrector.
 int main(void){

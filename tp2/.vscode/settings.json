@@ -1,6 +1,9 @@
 {
     "files.associations": {
         "usuario.h": "c",
-        "heap.h": "c"
+        "heap.h": "c",
+        "lista.h": "c",
+        "publicacion.h": "c",
+        "abb.h": "c"
     }
 }

@@ -7,7 +7,7 @@
 
 #include "abb.h"
 #include "testing.h"
-
+#include "pila.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -137,6 +137,42 @@ static void prueba_abb_reemplazar_con_destruir()
     abb_destruir(abb);
 }
 
+void _pila_destruir(void* pila){
+    pila_destruir(pila);
+}
+static void prueba_abb_con_pila()
+{
+    abb_t* abb = abb_crear(strcmp,_pila_destruir);
+
+    char *clave1 = "perro";
+    char *clave2 = "gato";
+
+    /* Pide memoria para 4 valores */
+    pila_t* pila1a = pila_crear();
+    pila_t* pila1b = pila_crear();
+    pila_t* pila2a = pila_crear();
+    pila_t* pila2b = pila_crear();
+
+    /* Inserta 2 valores y luego los reemplaza (debe liberar lo que reemplaza) */
+    print_test("Prueba abb insertar clave1", abb_guardar(abb, clave1, pila1a));
+    print_test("Prueba abb obtener clave1 es pila1a", abb_obtener(abb, clave1) == pila1a);
+    print_test("Prueba abb obtener clave1 es pila1a", abb_obtener(abb, clave1) == pila1a);
+    print_test("Prueba abb insertar clave2", abb_guardar(abb, clave2, pila2a));
+    print_test("Prueba abb obtener clave2 es pila2a", abb_obtener(abb, clave2) == pila2a);
+    print_test("Prueba abb obtener clave2 es pila2a", abb_obtener(abb, clave2) == pila2a);
+    print_test("Prueba abb la cantidad de elementos es 2", abb_cantidad(abb) == 2);
+
+    print_test("Prueba abb insertar clave1 con otro valor", abb_guardar(abb, clave1, pila1b));
+    print_test("Prueba abb obtener clave1 es pila1b", abb_obtener(abb, clave1) == pila1b);
+    print_test("Prueba abb obtener clave1 es pila1b", abb_obtener(abb, clave1) == pila1b);
+    print_test("Prueba abb insertar clave2 con otro valor", abb_guardar(abb, clave2, pila2b));
+    print_test("Prueba abb obtener clave2 es pila2b", abb_obtener(abb, clave2) == pila2b);
+    print_test("Prueba abb obtener clave2 es pila2b", abb_obtener(abb, clave2) == pila2b);
+    print_test("Prueba abb la cantidad de elementos es 2", abb_cantidad(abb) == 2);
+
+    /* Se destruye el abb (se debe liberar lo que quedó dentro) */
+    abb_destruir(abb);
+}
 bool print(const char* clave, void* dato, void* extra) {
     printf("%d\n", *(char*)clave);
     return true;
@@ -417,6 +453,7 @@ void pruebas_abb_estudiante()
     prueba_abb_insertar();
     prueba_abb_reemplazar();
     prueba_abb_reemplazar_con_destruir();
+    prueba_abb_con_pila();
     prueba_abb_borrar();
     prueba_abb_clave_vacia();
     prueba_abb_valor_null();
@@ -429,10 +466,10 @@ void pruebas_volumen_estudiante(size_t largo)
 {
     prueba_abb_volumen(largo, false);
 }
-/*
+
 #ifndef CORRECTOR
 int main(void){
     pruebas_abb_estudiante();
     return 0;
 }
-#endif*/
+#endif

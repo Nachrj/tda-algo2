@@ -8,8 +8,11 @@
 #include <string.h>
 #include <stdlib.h>
 
+void _usuario_destruir(void* usuario){
+    usuario_destruir(usuario);
+}
 hash_t* leer_archivo_usuarios(FILE *stream) {
-    hash_t* hash_usuarios = hash_crear(usuario_destruir);
+    hash_t* hash_usuarios = hash_crear(_usuario_destruir);
 
     char* linea = NULL;
     size_t tam;

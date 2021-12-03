@@ -15,7 +15,8 @@ struct algogram {
     usuario_t* usuario_actual;
     hash_t* hash_publicaciones;
 };
-_publicacion_destruir(void* publicacion){
+
+void _publicacion_destruir(void* publicacion){
     publicacion_destruir(publicacion);
 }
 // PRIMITIVAS DE ALGOGRAM
@@ -36,7 +37,7 @@ bool postear_publicacion(algogram_t* algogram, usuario_t* usuario_creador, publi
     if (!usuario_creador || !publicacion || !algogram) return false;
     
     // Agregar la publicacion a la lista de publicaciones totales
-    hash_guardar(algogram->hash_publicaciones, (char*)publicacion_get_id(publicacion),publicacion);
+    hash_guardar(algogram->hash_publicaciones, publicacion_get_texto(publicacion), publicacion);
 
     // Agregar la publicacion a la feed de cada usuario
     hash_iter_t* iter = hash_iter_crear(algogram->usuarios);
