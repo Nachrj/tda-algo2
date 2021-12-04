@@ -2,7 +2,9 @@
 #include <stddef.h>
 #include "usuario.h"
 #include "publicacion.h"
-#include "./tdas_aux/hash.h"
+#include "hash.h"
+#include "lista.h"
+#include "heap.h"
 struct algogram;
 
 typedef struct algogram algogram_t;

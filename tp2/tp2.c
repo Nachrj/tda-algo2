@@ -1,9 +1,7 @@
 #define _POSIX_C_SOURCE 200809L
 
-#include "./tdas_aux/hash.h"
-#include "usuario.h"
+#include "tdas_aux/hash.h"
 #include "algogram.h"
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -11,6 +9,7 @@
 void _usuario_destruir(void* usuario){
     usuario_destruir(usuario);
 }
+
 hash_t* leer_archivo_usuarios(FILE *stream) {
     hash_t* hash_usuarios = hash_crear(_usuario_destruir);
 
@@ -39,8 +38,13 @@ int main(int argc, char *argv[]) {
     }
     algogram_t* algogram = algogram_crear(leer_archivo_usuarios(mi_archivo));
     while(true){
-        char* input;
-        fgets(input, 50, stdin);
+        char* input = NULL;
+        size_t len = 0;
+        getline(&input, &len, stdin);
+        input[strlen(input)-1] = '\0';
+        if(!strcmp(input , "login")){
+            printf("%p",algogram);
+        }
     }
     return 0;
 }

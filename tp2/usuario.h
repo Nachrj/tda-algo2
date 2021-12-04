@@ -1,13 +1,11 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include "./tdas_aux/heap.h"
-
+#include "hash.h"
+#include "lista.h"
+#include "heap.h"
 struct usuario;
 typedef struct usuario usuario_t;
-
-struct publicacion_afinidad;
-typedef struct publicacion_afinidad publicacion_afinidad_t;
 
 usuario_t* usuario_crear(char* nombre, int id);
 void* ver_proximo_post_feed(usuario_t* usuario);

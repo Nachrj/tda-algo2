@@ -4,6 +4,9 @@
         "heap.h": "c",
         "lista.h": "c",
         "publicacion.h": "c",
-        "abb.h": "c"
+        "abb.h": "c",
+        "usuario_publi.h": "c",
+        "stdio.h": "c",
+        "hash.h": "c"
     }
 }

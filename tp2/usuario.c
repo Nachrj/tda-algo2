@@ -1,4 +1,4 @@
-#include "publicacion.h"
+#include "usuario_publi.h"
 #include "usuario.h"
 
 struct usuario {
@@ -39,6 +39,10 @@ usuario_t* usuario_crear(char* nombre, int id) {
     usuario->feed = heap_crear(afinidad_min);
     usuario->id = id;
     return usuario;
+}
+
+void postear_al_feed(usuario_t* usuario, publicacion_t* publicacion, int afinidad){
+    heap_encolar(usuario->feed, publicacion_afinidad_crear(publicacion, afinidad));
 }
 
 void* ver_proximo_post_feed(usuario_t* usuario) {

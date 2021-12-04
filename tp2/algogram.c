@@ -1,9 +1,6 @@
 #include "algogram.h"
-#include "usuario.h"
-#include "publicacion.h"
-#include "./tdas_aux/hash.h"
-#include "./tdas_aux/lista.h"
-#include "./tdas_aux/heap.h"
+#include "usuario_publi.h"
+#include "hash.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -49,7 +46,7 @@ bool postear_publicacion(algogram_t* algogram, usuario_t* usuario_creador, publi
 
         if (strcmp(usuario_get_nombre(usuario_actual), usuario_get_nombre(usuario_creador)) != 0) {
             // Encolo la publicación con la afinidad entre usuarios (publicacion_afinidad) para compararlo.
-            heap_encolar(usuario_get_feed(usuario_creador), &publicacion_afinidad_crear(publicacion, afinidad));
+            postear_al_feed(usuario_creador, publicacion, afinidad);
         }
         hash_iter_avanzar(iter);
     }

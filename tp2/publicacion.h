@@ -5,9 +5,12 @@
 #include <stdio.h>
 #include <string.h>
 #include "usuario.h"
-
+#include "hash.h"
+#include "lista.h"
+#include "heap.h"
 struct publicacion;
 typedef struct publicacion publicacion_t;
+
 
 //PRIMITIVAS PUBLICACIONES
 publicacion_t* publicacion_crear(usuario_t* usuario_creador, char* texto, int id);
