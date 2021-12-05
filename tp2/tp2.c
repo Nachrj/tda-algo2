@@ -83,7 +83,12 @@ int main(int argc, char *argv[]) {
         if(!strcmp(input, "likear_post")){
             getline(&input, &len, stdin);
             input[strlen(input)-1] = '\0';
-            likear_publicacion(algogram, input);
+            algogram_likear_publicacion(algogram, atoi(input));
+        }
+        if(!strcmp(input,"mostrar_likes")){
+            getline(&input, &len, stdin);
+            input[strlen(input)-1] = '\0';
+            algogram_mostrar_likes(algogram, atoi(input));
         }
     }
     return 0;

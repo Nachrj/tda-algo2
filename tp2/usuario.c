@@ -43,11 +43,15 @@ usuario_t* usuario_crear(char* nombre, int id) {
 
 void postear_al_feed(usuario_t* usuario, publicacion_t* publicacion, int afinidad){
     heap_encolar(usuario->feed, publicacion_afinidad_crear(publicacion, afinidad));
-    printf("%s\n", usuario_get_nombre(usuario));
-    printf("%ld\n", heap_cantidad(usuario->feed));
+    //printf("%s\n", usuario_get_nombre(usuario));
+    //printf("%ld\n", heap_cantidad(usuario->feed));
 }
 
 char* ver_proximo_post_feed(usuario_t* usuario) {
+    if(heap_esta_vacio(usuario->feed)){
+        printf("%s\n", "Usuario no loggeado o no hay mas posts para ver");
+        return NULL;
+    }
     publicacion_afinidad_t* publi = (publicacion_afinidad_t*)heap_desencolar(usuario->feed);
     return publicacion_get_texto(publi->publicacion);
 }
