@@ -67,6 +67,19 @@ int main(int argc, char *argv[]) {
             input[strlen(input)-1] = '\0';
             login_usuario(algogram, hash_usuarios, input);
         }
+        if(!strcmp(input, "logout")){
+            if (!algogram_logout(algogram)) {
+                printf("%s", "Error: no habia usuario loggeado\n");
+            }
+        }
+        if(!strcmp(input, "publicar")){
+            getline(&input, &len, stdin);
+            input[strlen(input)-1] = '\0';
+            postear_publicacion(algogram, input);
+        }
+        if(!strcmp(input, "ver_siguiente_feed")) {
+            algogram_ver_proximo(algogram);
+        }
     }
     return 0;
 }

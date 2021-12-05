@@ -30,9 +30,14 @@ int encontrar_afinidad(usuario_t* usuario_creador, usuario_t* usuario_actual) {
     return 1/(abs(usuario_get_id(usuario_creador) - usuario_get_id(usuario_actual)));
 }
 
-bool postear_publicacion(algogram_t* algogram, usuario_t* usuario_creador, publicacion_t* publicacion) {
-    if (!usuario_creador || !publicacion || !algogram) return false;
-    
+bool postear_publicacion(algogram_t* algogram, char* texto_publicacion) {
+    if (!texto_publicacion || !algogram) return false;
+    if (!algogram->usuario_actual) {
+        printf("%s\n", "Error: no habia usuario loggeado");
+        return false;
+    }
+    publicacion_t* publicacion = publicacion_crear(algogram->usuario_actual, texto_publicacion, (int)hash_cantidad(algogram->hash_publicaciones));
+
     // Agregar la publicacion a la lista de publicaciones totales
     hash_guardar(algogram->hash_publicaciones, publicacion_get_texto(publicacion), publicacion);
 
@@ -40,13 +45,14 @@ bool postear_publicacion(algogram_t* algogram, usuario_t* usuario_creador, publi
     hash_iter_t* iter = hash_iter_crear(algogram->usuarios);
 
     while (!hash_iter_al_final(iter)) {
-        usuario_t* usuario_actual = (usuario_t*)hash_iter_ver_actual(iter);
+        usuario_t* usuario = (usuario_t*)hash_iter_ver_actual(iter);
+        printf("%s\n", usuario_get_nombre(usuario));
         // Encuentro primero la afinidad entre los usuarios
-        int afinidad = encontrar_afinidad(usuario_creador, usuario_actual);
+        int afinidad = encontrar_afinidad(algogram->usuario_actual, usuario);
 
-        if (strcmp(usuario_get_nombre(usuario_actual), usuario_get_nombre(usuario_creador)) != 0) {
+        if (strcmp(usuario_get_nombre(usuario), usuario_get_nombre(algogram->usuario_actual)) != 0) {
             // Encolo la publicación con la afinidad entre usuarios (publicacion_afinidad) para compararlo.
-            postear_al_feed(usuario_creador, publicacion, afinidad);
+            postear_al_feed(algogram->usuario_actual, publicacion, afinidad);
         }
         hash_iter_avanzar(iter);
     }
@@ -55,8 +61,14 @@ bool postear_publicacion(algogram_t* algogram, usuario_t* usuario_creador, publi
     return true;
 }
 
-
-
+void algogram_ver_proximo(algogram_t* algogram) {
+    if (!algogram) return;
+    if (!algogram->usuario_actual) {
+        printf("%s\n", "Error: no habia usuario loggeado");
+        return;
+    }
+    printf("%s\n", ver_proximo_post_feed(algogram->usuario_actual));
+}
 
 bool likear_publicacion(algogram_t* algogram, usuario_t* usuario, publicacion_t* publicacion) {
     if (!usuario || !publicacion || !algogram) return false;
@@ -83,6 +95,13 @@ bool algogram_login(algogram_t* algogram, usuario_t* usuario) {
     if (!algogram || !usuario) return false;
     algogram->usuario_actual = usuario;
     printf("Hola %s\n", usuario_get_nombre(usuario));
+    return true;
+}
+
+bool algogram_logout(algogram_t* algogram) {
+    if (!algogram->usuario_actual) return false;
+    algogram->usuario_actual = NULL;
+    printf("Adios\n");
     return true;
 }
 

@@ -45,8 +45,9 @@ void postear_al_feed(usuario_t* usuario, publicacion_t* publicacion, int afinida
     heap_encolar(usuario->feed, publicacion_afinidad_crear(publicacion, afinidad));
 }
 
-void* ver_proximo_post_feed(usuario_t* usuario) {
-    return heap_desencolar(usuario->feed);
+char* ver_proximo_post_feed(usuario_t* usuario) {
+    publicacion_afinidad_t* publicacion = heap_desencolar(usuario->feed);
+    return publicacion_get_texto(publicacion->publicacion);
 }
 
 char* usuario_get_nombre(usuario_t* usuario){

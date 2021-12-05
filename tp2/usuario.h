@@ -8,7 +8,7 @@ struct usuario;
 typedef struct usuario usuario_t;
 
 usuario_t* usuario_crear(char* nombre, int id);
-void* ver_proximo_post_feed(usuario_t* usuario);
+char* ver_proximo_post_feed(usuario_t* usuario);
 void usuario_destruir(usuario_t* usuario);
 char* usuario_get_nombre(usuario_t* usuario);
 int usuario_get_id(usuario_t* usuario);
