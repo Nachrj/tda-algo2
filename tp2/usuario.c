@@ -27,7 +27,7 @@ void publicacion_afinidad_destruir(publicacion_afinidad_t* publicacion_afinidad)
 }
 
 int afinidad_min(const void* a, const void* b){
-    return ((publicacion_afinidad_t*)a)->afinidad - ((publicacion_afinidad_t*)b)->afinidad;
+    return ((publicacion_afinidad_t*)b)->afinidad - ((publicacion_afinidad_t*)a)->afinidad;
 }
 
 
@@ -43,11 +43,13 @@ usuario_t* usuario_crear(char* nombre, int id) {
 
 void postear_al_feed(usuario_t* usuario, publicacion_t* publicacion, int afinidad){
     heap_encolar(usuario->feed, publicacion_afinidad_crear(publicacion, afinidad));
+    printf("%s\n", usuario_get_nombre(usuario));
+    printf("%ld\n", heap_cantidad(usuario->feed));
 }
 
 char* ver_proximo_post_feed(usuario_t* usuario) {
-    publicacion_afinidad_t* publicacion = heap_desencolar(usuario->feed);
-    return publicacion_get_texto(publicacion->publicacion);
+    publicacion_afinidad_t* publi = (publicacion_afinidad_t*)heap_desencolar(usuario->feed);
+    return publicacion_get_texto(publi->publicacion);
 }
 
 char* usuario_get_nombre(usuario_t* usuario){

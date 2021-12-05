@@ -27,7 +27,7 @@ algogram_t* algogram_crear(hash_t* usuarios) {
 }
 
 int encontrar_afinidad(usuario_t* usuario_creador, usuario_t* usuario_actual) {
-    return 1/(abs(usuario_get_id(usuario_creador) - usuario_get_id(usuario_actual)));
+    return abs(usuario_get_id(usuario_creador) - usuario_get_id(usuario_actual));
 }
 
 bool postear_publicacion(algogram_t* algogram, char* texto_publicacion) {
@@ -39,20 +39,23 @@ bool postear_publicacion(algogram_t* algogram, char* texto_publicacion) {
     publicacion_t* publicacion = publicacion_crear(algogram->usuario_actual, texto_publicacion, (int)hash_cantidad(algogram->hash_publicaciones));
 
     // Agregar la publicacion a la lista de publicaciones totales
-    hash_guardar(algogram->hash_publicaciones, publicacion_get_texto(publicacion), publicacion);
+    hash_guardar(algogram->hash_publicaciones, publicacion_get_id(publicacion), publicacion);
 
     // Agregar la publicacion a la feed de cada usuario
     hash_iter_t* iter = hash_iter_crear(algogram->usuarios);
-
+    
     while (!hash_iter_al_final(iter)) {
-        usuario_t* usuario = (usuario_t*)hash_iter_ver_actual(iter);
-        printf("%s\n", usuario_get_nombre(usuario));
+        usuario_t* usuario = (usuario_t*)hash_obtener(algogram->usuarios, hash_iter_ver_actual(iter));
         // Encuentro primero la afinidad entre los usuarios
+        if (!strcmp(usuario_get_nombre(usuario), usuario_get_nombre(algogram->usuario_actual))) {
+            hash_iter_avanzar(iter);
+            continue;
+        }
         int afinidad = encontrar_afinidad(algogram->usuario_actual, usuario);
 
         if (strcmp(usuario_get_nombre(usuario), usuario_get_nombre(algogram->usuario_actual)) != 0) {
             // Encolo la publicación con la afinidad entre usuarios (publicacion_afinidad) para compararlo.
-            postear_al_feed(algogram->usuario_actual, publicacion, afinidad);
+            postear_al_feed(usuario, publicacion, afinidad);
         }
         hash_iter_avanzar(iter);
     }
@@ -70,25 +73,16 @@ void algogram_ver_proximo(algogram_t* algogram) {
     printf("%s\n", ver_proximo_post_feed(algogram->usuario_actual));
 }
 
-bool likear_publicacion(algogram_t* algogram, usuario_t* usuario, publicacion_t* publicacion) {
-    if (!usuario || !publicacion || !algogram) return false;
+bool likear_publicacion(algogram_t* algogram, int id) {
+    if (!id || !algogram) return false;
 
-    
-    /* Conseguimos el post y lo likeamos
-    lista_iter_t* iter = lista_iter_crear(algogram->lista_publicaciones);
-
-    while (!lista_iter_al_final(iter)) {
-        publicacion_t* publicacion = lista_iter_ver_actual(iter);
-        if (publicacion->id == id_publicacion) {
-            publicacion->cant_likes++;
-            printf("Post likeado\n");
-            return agregar_usuario_likes(publicacion, usuario);
-        }
-    }*/
-
-    // En el caso de que no guarde el usuario, devolvemos false.
-    printf("Error: Usuario no loggeado o Post inexistente\n");
-    return false;
+    publicacion_t* publi = hash_obtener(algogram->hash_publicaciones, publicacion_get_id(publicacion));
+    if (!publi || !algogram->usuario_actual) {
+        printf("Error: Usuario no loggeado o Post inexistente\n");
+        return false;
+    }
+    printf("Post likeado\n");
+    return agregar_usuario_likes(publi, algogram->usuario_actual);
 }
 
 bool algogram_login(algogram_t* algogram, usuario_t* usuario) {

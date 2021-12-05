@@ -80,6 +80,11 @@ int main(int argc, char *argv[]) {
         if(!strcmp(input, "ver_siguiente_feed")) {
             algogram_ver_proximo(algogram);
         }
+        if(!strcmp(input, "likear_post")){
+            getline(&input, &len, stdin);
+            input[strlen(input)-1] = '\0';
+            likear_publicacion(algogram, input);
+        }
     }
     return 0;
 }
