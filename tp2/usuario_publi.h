@@ -1,5 +1,6 @@
 #include "publicacion.h"
 #include "usuario.h"
+
 struct publicacion_afinidad;
 typedef struct publicacion_afinidad publicacion_afinidad_t;
 

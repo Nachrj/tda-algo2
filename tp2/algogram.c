@@ -79,6 +79,18 @@ bool likear_publicacion(algogram_t* algogram, usuario_t* usuario, publicacion_t*
     return false;
 }
 
+bool algogram_login(algogram_t* algogram, usuario_t* usuario) {
+    if (!algogram || !usuario) return false;
+    algogram->usuario_actual = usuario;
+    printf("Hola %s\n", usuario_get_nombre(usuario));
+    return true;
+}
+
+usuario_t* algogram_get_usuario_actual(algogram_t* algogram) {
+    if (!algogram) return NULL;
+    return algogram->usuario_actual;
+}
+
 void algogram_destruir(algogram_t* algogram) {
     if (!algogram) return;
     hash_destruir(algogram->usuarios);
