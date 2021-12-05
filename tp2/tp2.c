@@ -18,10 +18,9 @@ hash_t* leer_archivo_usuarios(FILE *stream) {
 
     int i = 0;
     while ((getline(&linea, &tam, stream)) != EOF) {
-        linea[strlen(linea)-1] = '\0';
+        linea[strlen(linea)-2] = '\0';
         usuario_t* usuario = usuario_crear(linea, i);
-        printf("%s\n", usuario_get_nombre(usuario));
-        hash_guardar(hash_usuarios, usuario_get_nombre(usuario), usuario);
+        hash_guardar(hash_usuarios, linea, usuario);
         i++;
     }
     free(linea);
@@ -31,15 +30,13 @@ hash_t* leer_archivo_usuarios(FILE *stream) {
 
 bool login_usuario(algogram_t* algogram, hash_t* hash_usuarios, char* nombre_usuario) {
     if (algogram_get_usuario_actual(algogram)) {
-        fprintf(stderr, "Error: Ya habia un usuario loggeado\n");
+        printf("%s", "Error: Ya habia un usuario loggeado\n");
         return false;    
     }
 
-    printf("%s", nombre_usuario);
-    printf("%d", hash_pertenece(hash_usuarios, "Echi"));
     usuario_t* usuario = hash_obtener(hash_usuarios, nombre_usuario);
     if (usuario == NULL) {
-        fprintf(stderr, "Error: usuario no existente\n");
+        printf("%s", "Error: usuario no existente\n");
         return false;
     }
 
@@ -49,12 +46,12 @@ bool login_usuario(algogram_t* algogram, hash_t* hash_usuarios, char* nombre_usu
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
-        fprintf(stderr, "Error: Cantidad erronea de parametros\n");
+        printf("%s", "Error: Cantidad erronea de parametros\n");
         return -1;
     }
     FILE *mi_archivo = fopen(argv[1], "r");
     if (mi_archivo == NULL) {
-        fprintf(stderr, "Error: archivo fuente inaccesible\n");
+        printf("%s", "Error: archivo fuente inaccesible\n");
         return -1;
     }
     hash_t* hash_usuarios = leer_archivo_usuarios(mi_archivo);
