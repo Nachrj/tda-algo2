@@ -22,7 +22,6 @@ publicacion_afinidad_t* publicacion_afinidad_crear(publicacion_t* publicacion, i
 
 void publicacion_afinidad_destruir(publicacion_afinidad_t* publicacion_afinidad) {
     if (!publicacion_afinidad) return;
-    publicacion_destruir(publicacion_afinidad->publicacion);
     free(publicacion_afinidad);
 }
 
@@ -71,6 +70,7 @@ heap_t* usuario_get_feed(usuario_t* usuario){
 void _publicacion_afinidad_destruir(void* publicacion){
     publicacion_afinidad_destruir(publicacion);
 }
+
 void usuario_destruir(usuario_t* usuario) {
     if (!usuario) return;
     free(usuario->nombre);

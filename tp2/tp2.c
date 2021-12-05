@@ -18,7 +18,9 @@ hash_t* leer_archivo_usuarios(FILE *stream) {
 
     int i = 0;
     while ((getline(&linea, &tam, stream)) != EOF) {
-        linea[strlen(linea)-2] = '\0';
+        if (linea[strlen(linea)-1] == '\n'){
+            linea[strlen(linea)-1] = '\0';
+        }
         usuario_t* usuario = usuario_crear(linea, i);
         hash_guardar(hash_usuarios, linea, usuario);
         i++;
@@ -57,10 +59,10 @@ int main(int argc, char *argv[]) {
     hash_t* hash_usuarios = leer_archivo_usuarios(mi_archivo);
     algogram_t* algogram = algogram_crear(hash_usuarios);
 
-    while(true){
-        char* input = NULL;
-        size_t len = 0;
-        getline(&input, &len, stdin);
+    char* input = NULL;
+    size_t len = 0;
+    while(getline(&input, &len, stdin) != EOF){
+        
         input[strlen(input)-1] = '\0';
         if(!strcmp(input , "login")){
             getline(&input, &len, stdin);
@@ -91,6 +93,9 @@ int main(int argc, char *argv[]) {
             algogram_mostrar_likes(algogram, atoi(input));
         }
     }
+    free(input);
+    algogram_destruir(algogram);
+    fclose(mi_archivo);
     return 0;
 }
 

@@ -3,7 +3,7 @@
 set -eu
 
 PROGRAMA="$1"
-VALGRIND="valgrind --leak-check=full --track-origins=yes --error-exitcode=2"
+VALGRIND="valgrind --leak-check=full --track-origins=yes --error-exitcode=2 --leak-check=full --show-leak-kinds=all"
 
 RET=0
 OUT=`mktemp`

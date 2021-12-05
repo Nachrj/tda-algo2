@@ -63,6 +63,7 @@ bool postear_publicacion(algogram_t* algogram, char* texto_publicacion) {
     }
 
     hash_iter_destruir(iter);
+    printf("Post publicado\n");
     return true;
 }
 
