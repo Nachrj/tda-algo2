@@ -56,6 +56,7 @@ void* ver_proximo_post_feed(usuario_t* usuario) {
     }
     publicacion_afinidad_t* publi = (publicacion_afinidad_t*)heap_desencolar(usuario->feed);
     void* publi_pointer = publi->publicacion;
+    publicacion_afinidad_destruir(publi);
     return publi_pointer;
 }
 

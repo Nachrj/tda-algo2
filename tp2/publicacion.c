@@ -17,7 +17,7 @@ publicacion_t* publicacion_crear(usuario_t* usuario_creador, char* texto, int id
     publicacion_t* publicacion = calloc(1, sizeof(publicacion_t));
     if (!publicacion) return NULL;
     publicacion->usuario_creador = usuario_creador;
-    publicacion->likes = abb_crear(strcmp, free);
+    publicacion->likes = abb_crear(strcmp, NULL);
     publicacion->texto = strdup(texto);
     publicacion->id = id;
     return publicacion;
@@ -25,9 +25,9 @@ publicacion_t* publicacion_crear(usuario_t* usuario_creador, char* texto, int id
 
 bool agregar_usuario_likes(publicacion_t* publicacion, usuario_t* usuario) {
     if (!publicacion || !usuario) return false;
-    if(!strcmp(usuario_get_nombre(publicacion->usuario_creador), usuario_get_nombre(usuario))) return true;
+    //if(!strcmp(usuario_get_nombre(publicacion->usuario_creador), usuario_get_nombre(usuario))) return true;
     if(abb_pertenece(publicacion->likes, usuario_get_nombre(usuario))) return true;
-    if (abb_guardar(publicacion->likes, strdup(usuario_get_nombre(usuario)), usuario)) {
+    if (abb_guardar(publicacion->likes, usuario_get_nombre(usuario), usuario)) {
         publicacion->cant_likes++;
         return true;
     }
@@ -35,7 +35,7 @@ bool agregar_usuario_likes(publicacion_t* publicacion, usuario_t* usuario) {
 }
 
 bool imprimir_likes(const char* clave, void* dato, void* extra) {
-    printf("%s\n", (char*)clave);
+    printf("\t%s\n", (char*)clave);
     return true;
 }
 
@@ -59,6 +59,7 @@ char* publicacion_get_texto(publicacion_t* publicacion){
 int publicacion_get_likes(publicacion_t* publicacion){
     return publicacion->cant_likes;
 }
+
 void publicacion_destruir(publicacion_t* publicacion) {
     if (!publicacion) return;
     free(publicacion->texto);

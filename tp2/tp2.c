@@ -95,6 +95,7 @@ int main(int argc, char *argv[]) {
     }
     free(input);
     algogram_destruir(algogram);
+    //hash_destruir(hash_usuarios);
     fclose(mi_archivo);
     return 0;
 }
