@@ -20,5 +20,6 @@ bool imprimir_likes(const char* clave, void* dato, void* extra);
 void mostrar_likes(publicacion_t* publicacion);
 int publicacion_get_likes(publicacion_t* publicacion);
 int publicacion_get_id(publicacion_t* publicacion);
+usuario_t* publicacion_get_usuario_creador(publicacion_t* publicacion);
 char* publicacion_get_texto(publicacion_t* publicacion);
 void publicacion_destruir(publicacion_t* publicacion);

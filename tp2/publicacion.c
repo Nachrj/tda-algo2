@@ -48,6 +48,10 @@ void mostrar_likes(publicacion_t* publicacion) {
     abb_in_order(publicacion->likes, imprimir_likes, NULL);
 }
 
+usuario_t* publicacion_get_usuario_creador(publicacion_t* publicacion) {
+    return publicacion->usuario_creador;
+}
+
 int publicacion_get_id(publicacion_t* publicacion){
     return publicacion->id;
 }

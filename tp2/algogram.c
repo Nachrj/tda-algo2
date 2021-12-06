@@ -73,9 +73,11 @@ void algogram_ver_proximo(algogram_t* algogram) {
         printf("%s\n", "Usuario no loggeado o no hay mas posts para ver");
         return;
     }
-    char* publicacion = ver_proximo_post_feed(algogram->usuario_actual);
+    publicacion_t* publicacion = (publicacion_t*)ver_proximo_post_feed(algogram->usuario_actual);
     if(!publicacion) return;
-    printf("%s\n", publicacion);
+    printf("Post ID %d\n", publicacion_get_id(publicacion));
+    printf("%s dijo: %s\n", usuario_get_nombre(publicacion_get_usuario_creador(publicacion)), publicacion_get_texto(publicacion));
+    printf("Likes: %d\n", publicacion_get_likes(publicacion));
 }
 
 bool algogram_likear_publicacion(algogram_t* algogram, int id) {
