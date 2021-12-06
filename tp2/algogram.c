@@ -18,7 +18,7 @@ void _publicacion_destruir(void* publicacion){
 }
 // PRIMITIVAS DE ALGOGRAM
 algogram_t* algogram_crear(hash_t* usuarios) {
-    algogram_t* algogram = malloc(sizeof(algogram_t));
+    algogram_t* algogram = calloc(1, sizeof(algogram_t));
     if (!algogram) return NULL;
     algogram->usuarios = usuarios;
     algogram->usuario_actual = NULL;

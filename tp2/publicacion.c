@@ -14,7 +14,7 @@ struct publicacion {
 
 // PRIMITIVAS PUBLICACIONES
 publicacion_t* publicacion_crear(usuario_t* usuario_creador, char* texto, int id) {
-    publicacion_t* publicacion = malloc(sizeof(publicacion_t));
+    publicacion_t* publicacion = calloc(1, sizeof(publicacion_t));
     if (!publicacion) return NULL;
     publicacion->usuario_creador = usuario_creador;
     publicacion->likes = abb_crear(strcmp, free);
@@ -32,10 +32,6 @@ bool agregar_usuario_likes(publicacion_t* publicacion, usuario_t* usuario) {
         return true;
     }
     return false;
-}
-
-int publicacion_cantidad_likes(publicacion_t* publicacion) {
-    return publicacion->cant_likes;
 }
 
 bool imprimir_likes(const char* clave, void* dato, void* extra) {

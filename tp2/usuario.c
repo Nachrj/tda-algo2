@@ -14,7 +14,7 @@ struct publicacion_afinidad {
 
 // PRIMITIVAS PUBLICACION CON AFINIDAD
 publicacion_afinidad_t* publicacion_afinidad_crear(publicacion_t* publicacion, int afinidad) {
-    publicacion_afinidad_t* publicacion_afinidad = malloc(sizeof(publicacion_afinidad_t));
+    publicacion_afinidad_t* publicacion_afinidad = calloc(1, sizeof(publicacion_afinidad_t));
     publicacion_afinidad->publicacion = publicacion;
     publicacion_afinidad->afinidad = afinidad;
     return publicacion_afinidad;
@@ -26,6 +26,9 @@ void publicacion_afinidad_destruir(publicacion_afinidad_t* publicacion_afinidad)
 }
 
 int afinidad_min(const void* a, const void* b){
+    if (!(((publicacion_afinidad_t*)b)->afinidad - ((publicacion_afinidad_t*)a)->afinidad)) {
+        return publicacion_get_id(((publicacion_afinidad_t*)b)->publicacion) - publicacion_get_id(((publicacion_afinidad_t*)a)->publicacion);
+    }
     return ((publicacion_afinidad_t*)b)->afinidad - ((publicacion_afinidad_t*)a)->afinidad;
 }
 
