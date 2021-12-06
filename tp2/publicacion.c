@@ -25,7 +25,6 @@ publicacion_t* publicacion_crear(usuario_t* usuario_creador, char* texto, int id
 
 bool agregar_usuario_likes(publicacion_t* publicacion, usuario_t* usuario) {
     if (!publicacion || !usuario) return false;
-    //if(!strcmp(usuario_get_nombre(publicacion->usuario_creador), usuario_get_nombre(usuario))) return true;
     if(abb_pertenece(publicacion->likes, usuario_get_nombre(usuario))) return true;
     if (abb_guardar(publicacion->likes, usuario_get_nombre(usuario), usuario)) {
         publicacion->cant_likes++;

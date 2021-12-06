@@ -107,7 +107,6 @@ bool abb_guardar(abb_t *arbol, const char *clave, void *dato){
 }
 
 nodo_t* sucesor(nodo_t* actual){
-    //printf("%d",*(int*)actual->dato);
     if(!actual) return NULL;
     if(!actual->izq){
         return actual;
