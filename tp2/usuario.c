@@ -1,5 +1,4 @@
 #include "usuario_publi.h"
-#include "usuario.h"
 
 struct usuario {
     char* nombre;
@@ -64,10 +63,6 @@ char* usuario_get_nombre(usuario_t* usuario){
 
 int usuario_get_id(usuario_t* usuario){
     return usuario->id;
-}
-
-heap_t* usuario_get_feed(usuario_t* usuario){
-    return usuario->feed;
 }
 
 void _publicacion_afinidad_destruir(void* publicacion){

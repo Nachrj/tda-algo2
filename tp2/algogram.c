@@ -1,5 +1,4 @@
 #include "algogram.h"
-#include "usuario_publi.h"
 #include "hash.h"
 
 #include <stdlib.h>

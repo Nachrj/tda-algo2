@@ -65,9 +65,11 @@ int main(int argc, char *argv[]) {
         
         input[strlen(input)-1] = '\0';
         if(!strcmp(input , "login")){
-            getline(&input, &len, stdin);
-            input[strlen(input)-1] = '\0';
-            login_usuario(algogram, hash_usuarios, input);
+            ssize_t get = getline(&input, &len, stdin);
+            if(get){
+                input[strlen(input)-1] = '\0';
+                login_usuario(algogram, hash_usuarios, input);
+            }
         }
         if(!strcmp(input, "logout")){
             if (!algogram_logout(algogram)) {
@@ -75,22 +77,28 @@ int main(int argc, char *argv[]) {
             }
         }
         if(!strcmp(input, "publicar")){
-            getline(&input, &len, stdin);
-            input[strlen(input)-1] = '\0';
-            postear_publicacion(algogram, input);
+            ssize_t get = getline(&input, &len, stdin);
+            if(get){
+                input[strlen(input)-1] = '\0';
+                postear_publicacion(algogram, input);
+            }
         }
         if(!strcmp(input, "ver_siguiente_feed")) {
             algogram_ver_proximo(algogram);
         }
         if(!strcmp(input, "likear_post")){
-            getline(&input, &len, stdin);
-            input[strlen(input)-1] = '\0';
-            algogram_likear_publicacion(algogram, atoi(input));
+            ssize_t get = getline(&input, &len, stdin);
+            if(get){
+                input[strlen(input)-1] = '\0';
+                algogram_likear_publicacion(algogram, atoi(input));
+            }
         }
         if(!strcmp(input,"mostrar_likes")){
-            getline(&input, &len, stdin);
-            input[strlen(input)-1] = '\0';
-            algogram_mostrar_likes(algogram, atoi(input));
+            ssize_t get = getline(&input, &len, stdin);
+            if(get){
+                input[strlen(input)-1] = '\0';
+                algogram_mostrar_likes(algogram, atoi(input));
+            }
         }
     }
     free(input);
