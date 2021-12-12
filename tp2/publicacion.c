@@ -1,5 +1,4 @@
 #define _POSIX_C_SOURCE 200809L
-#include "usuario.h"
 #include "abb.h"
 #include "publicacion.h"
 #include <string.h>
