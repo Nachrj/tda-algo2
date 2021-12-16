@@ -85,6 +85,13 @@ def camino(grafo, origen, destino):
             print('->', end=" ")
     print(f'\nCosto: {orden[destino]}')
     return orden[destino]
-        
+
+def rango(grafo, pagina, n):
+    _, orden = bfs(grafo, pagina)
+    count = 0
+    for v in orden:
+        if orden[v] == int(n):
+            count += 1
+    return count
 def mas_importantes(grafo, n):
     pass

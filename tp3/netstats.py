@@ -1,6 +1,6 @@
 from grafo import Grafo
 from biblioteca import *
-RUTA_WIKI = 'wiki-reducido-5000.tsv'
+RUTA_WIKI = 'wiki-reducido-75000.tsv'
 
 def main():
     netstats = crear_red(RUTA_WIKI)
@@ -20,4 +20,11 @@ def main():
             camino(netstats, origen, destino)
         if comando == 'diametro':
             diametro(netstats)
+        if comando == 'rango':
+            links = parametros.split(',')
+            if len(links) != 2:
+                continue
+            pagina = links[0]
+            saltos = links[1]
+            print(rango(netstats, pagina, saltos))
 main()
