@@ -1,14 +1,16 @@
 from grafo import Grafo
 from biblioteca import *
-RUTA_WIKI = 'wiki-reducido-75000.tsv'
+RUTA_WIKI = 'wiki-reducido-5000.tsv'
 
 def main():
     netstats = crear_red(RUTA_WIKI)
+    #print("Francia" in netstats.obtener_adyacentes("Argentina"))
     while True:
         entrada = input()
         entrada = entrada.split(" ", 1)
         comando = entrada[0]
-        parametros = entrada[1]
+        if len(entrada) > 1:
+            parametros = entrada[1]
         if comando == 'camino':
             links = parametros.split(',')
             if len(links) != 2:
@@ -16,4 +18,6 @@ def main():
             origen = links[0]
             destino = links[1]
             camino(netstats, origen, destino)
+        if comando == 'diametro':
+            diametro(netstats)
 main()

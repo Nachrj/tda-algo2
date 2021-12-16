@@ -4,6 +4,8 @@ class Grafo:
         self.cantidad = 0
 
     def agregar_vertice(self, v):
+        if v in self.vertices:
+            return False
         self.vertices[v] = {}
         self.cantidad += 1
 
@@ -16,12 +18,11 @@ class Grafo:
         Si no existe alguno de los 2 vertices devuelve false.
         Si ya existe la arista devuelve false.
         """
-        if v not in self.vertices or w not in self.vertices:
+        if v not in self.vertices or w not in self.vertices or v == w:
             return False
-        if self.estan_unidos(v, w):
+        if self.es_adyacente(v, w):
             return False
-        self.vertices[v][w] = 1
-        self.vertices[w][v] = 1
+        self.vertices[v][w] = "yes"
 
     def borrar_arista(self, v, w):
         """
@@ -29,7 +30,7 @@ class Grafo:
         Si no existe alguno de los 2 vertices devuelve false.
         
         """
-        if not self.estan_unidos(v,w):
+        if not self.es_adyacente(v,w):
             return False
         self.vertices[v].pop(w)
         self.vertices[w].pop(v)
@@ -48,16 +49,16 @@ class Grafo:
         Devuelve todos los adyacentes de un vertice.
         Si no existe el vertice devuelve None
         """
-        if not self.vertices[v]:
-            return None
+        if v not in self.vertices:
+            return {}
         return self.vertices[v]
 
-    def estan_unidos(self, v, w):
+    def es_adyacente(self, v, w):
         """
         Devuelve True si 2 vertices estan unidos.
         Si no existe alguno de los 2 vertices devuelve false.
         """
         if v not in self.vertices or w not in self.vertices:
             return False
-        return v in self.vertices[w] and w in self.vertices[v]
+        return w in self.vertices[v]
     
