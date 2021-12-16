@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from grafo import Grafo
 from biblioteca import *
 RUTA_WIKI = 'wiki-reducido-75000.tsv'

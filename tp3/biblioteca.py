@@ -1,7 +1,7 @@
 from collections import deque
 from grafo import Grafo
 import re
-OPERACIONES = ['camino','mas_importantes', 'diametro']
+OPERACIONES = ['camino','mas_importantes', 'diametro','rango']
 
 def crear_red(ruta):
     g = Grafo()
@@ -87,6 +87,7 @@ def camino(grafo, origen, destino):
     return orden[destino]
 
 def rango(grafo, pagina, n):
+    #O(P + L) + P = O(P + L)
     _, orden = bfs(grafo, pagina)
     count = 0
     for v in orden:
