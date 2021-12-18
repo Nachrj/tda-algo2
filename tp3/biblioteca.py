@@ -3,8 +3,8 @@ from grafo import Grafo
 import re
 OPERACIONES = ['camino','clustering', 'diametro','rango','navegacion']
 
-def crear_red(ruta):
-    g = Grafo()
+def crear_red(ruta, es_dirigido):
+    g = Grafo(es_dirigido)
     with open(ruta, encoding='utf-8') as archivo:
         for linea in archivo:
             linea = linea.rstrip()

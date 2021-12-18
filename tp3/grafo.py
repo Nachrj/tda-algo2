@@ -1,7 +1,8 @@
 class Grafo:
-    def __init__(self):
+    def __init__(self, es_dirigido):
         self.vertices = {}
         self.cantidad = 0
+        self.es_dirigido = es_dirigido
 
     def agregar_vertice(self, v):
         if v in self.vertices:
@@ -10,9 +11,13 @@ class Grafo:
         self.cantidad += 1
 
     def borrar_vertice(self, v):
+        vertices = self.obtener_vertices()
+        for w in vertices:
+            if v in self.obtener_adyacentes(w):
+                self.borrar_arista(v, w)
         self.vertices.pop(v)
 
-    def agregar_arista(self, v, w):
+    def agregar_arista(self, v, w, peso=1):
         """
         Agrega una arista entre 2 vertices.
         Si no existe alguno de los 2 vertices devuelve false.
@@ -22,7 +27,10 @@ class Grafo:
             return False
         if self.es_adyacente(v, w):
             return False
-        self.vertices[v][w] = 1
+        
+        self.vertices[v][w] = peso
+        if not self.es_dirigido:
+            self.vertices[w][v] = peso
 
     def borrar_arista(self, v, w):
         """
@@ -33,7 +41,8 @@ class Grafo:
         if not self.es_adyacente(v,w):
             return False
         self.vertices[v].pop(w)
-        self.vertices[w].pop(v)
+        if(not self.es_dirigido):
+            self.vertices[w].pop(v)
 
     def obtener_vertices(self):
         """
@@ -60,5 +69,6 @@ class Grafo:
         """
         if v not in self.vertices or w not in self.vertices:
             return False
-        return w in self.vertices[v]
-    
+        if self.es_dirigido:
+            return w in self.vertices[v]
+        return w in self.vertices[v] and v in self.vertices[w]
