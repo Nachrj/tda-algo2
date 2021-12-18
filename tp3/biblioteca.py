@@ -1,7 +1,7 @@
 from collections import deque
 from grafo import Grafo
 import re
-OPERACIONES = ['camino','mas_importantes', 'diametro','rango']
+OPERACIONES = ['camino','clustering', 'diametro','rango','navegacion']
 
 def crear_red(ruta):
     g = Grafo()
@@ -13,6 +13,10 @@ def crear_red(ruta):
                 g.agregar_vertice(valor)
                 g.agregar_arista(recortado[0], valor)
     return g
+
+def listar_operaciones():
+    for operacion in OPERACIONES:
+        print(operacion)
 
 def bfs(grafo, origen):
     visitados = set()
@@ -40,13 +44,13 @@ def bfs_con_maximo_y_terminacion(grafo, v):
     padres[v] = None
     orden[v] = 0
     maximo = -1
-    route = []
     visitados.add(v)
     q = deque()
     q.append(v)
     while not len(q) == 0:
         v = q.popleft()
-        for w in grafo.obtener_adyacentes(v):
+        adyacentes = grafo.obtener_adyacentes(v)
+        for w in adyacentes:
             if w not in visitados:
                 padres[w] = v
                 orden[w] = orden[v] + 1
@@ -57,6 +61,7 @@ def bfs_con_maximo_y_terminacion(grafo, v):
     return maximo, v
 
 def diametro(grafo):
+    #TODO: Chequear si hacer el bfs del final no cambia la complejidad.
     maximo = 0
     origen = None
     destino = None
@@ -94,5 +99,40 @@ def rango(grafo, pagina, n):
         if orden[v] == int(n):
             count += 1
     return count
-def mas_importantes(grafo, n):
-    pass
+
+def clustering(grafo, pagina=None):
+    #TODO: Chequear si la complejidad esta bien
+    if(pagina == None):
+        vertices = grafo.obtener_vertices()
+        total = 0
+        for v in vertices: #O(P)
+            total += clustering(grafo, v)
+        return round(float(total/len(vertices)),4)
+
+    coeficiente = 0.0
+    adyacentes = grafo.obtener_adyacentes(pagina)
+    aristas = 0
+    if len(adyacentes) < 2:
+        return coeficiente
+    for v in adyacentes:       #O(P)
+        for w in adyacentes:   #O(P)
+            if w == v:
+                continue
+            if grafo.es_adyacente(v,w):
+                aristas += 1
+    coeficiente = float(aristas/(len(adyacentes)*(len(adyacentes)-1)))
+    return round(coeficiente, 4)
+
+
+def _navegacion(grafo, origen, cont):
+    adyacentes = list(grafo.obtener_adyacentes(origen).keys())
+    if len(adyacentes) == 0 or cont == 20:
+        return origen
+    print(f'-> {adyacentes[0]}', end=" ")
+    return _navegacion(grafo, adyacentes[0], cont+1)
+
+def navegacion(grafo, origen):
+    #TODO: Prints, chequear si son estrictos y arreglar
+    print(f'{origen}', end=" ")
+    return _navegacion(grafo, origen, 0)
+        

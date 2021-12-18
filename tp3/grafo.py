@@ -22,7 +22,7 @@ class Grafo:
             return False
         if self.es_adyacente(v, w):
             return False
-        self.vertices[v][w] = "yes"
+        self.vertices[v][w] = 1
 
     def borrar_arista(self, v, w):
         """

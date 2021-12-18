@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 from grafo import Grafo
 from biblioteca import *
-RUTA_WIKI = 'wiki-reducido-75000.tsv'
+RUTA_WIKI = 'wiki-reducido-5000.tsv'
 
 def main():
     netstats = crear_red(RUTA_WIKI)
@@ -28,4 +28,14 @@ def main():
             pagina = links[0]
             saltos = links[1]
             print(rango(netstats, pagina, saltos))
+        if comando == 'listar_operaciones':
+            listar_operaciones()
+        if comando == 'clustering':
+            if len(entrada) != 1:
+                print(clustering(netstats, parametros))
+            else:
+                print(clustering(netstats))
+        if comando == 'navegacion':
+            navegacion(netstats, parametros)
+
 main()
