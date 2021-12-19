@@ -24,13 +24,13 @@ def listar_operaciones():
     for operacion in OPERACIONES:
         print(operacion)
 
-def _dfs(grafo, v, visitados, padres, origen):
+def _dfs(grafo, v, visitados, padres, orden):
     for w in grafo.adyacentes(v):
         if w not in visitados:
             visitados.add(w)
             padres[w] = v
-            origen[w] = orden[v] + 1
-            _dfs(grafo, w, visitados, padres, origen)
+            orden[w] = orden[v] + 1
+            _dfs(grafo, w, visitados, padres, orden)
 
 def dfs(grafo, origen):
     padres = {}
@@ -89,7 +89,8 @@ def diametro(grafo):
     maximo = 0
     origen = None
     destino = None
-    for v in grafo.obtener_vertices():
+    vertices = grafo.obtener_vertices()
+    for v in vertices:
         dist, fin_camino = bfs_con_maximo_y_terminacion(grafo, v)
         if dist > maximo:
             maximo = dist
