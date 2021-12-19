@@ -1,7 +1,13 @@
 from collections import deque
 from grafo import Grafo
+
+import heapq
+import sys
+
 import re
-OPERACIONES = ['camino','clustering', 'diametro','rango','navegacion']
+import random
+
+OPERACIONES = ['camino', 'clustering', 'diametro', 'rango', 'navegacion', 'mas_importantes']
 
 def crear_red(ruta, es_dirigido):
     g = Grafo(es_dirigido)
@@ -17,6 +23,24 @@ def crear_red(ruta, es_dirigido):
 def listar_operaciones():
     for operacion in OPERACIONES:
         print(operacion)
+
+def _dfs(grafo, v, visitados, padres, origen):
+    for w in grafo.adyacentes(v):
+        if w not in visitados:
+            visitados.add(w)
+            padres[w] = v
+            origen[w] = orden[v] + 1
+            _dfs(grafo, w, visitados, padres, origen)
+
+def dfs(grafo, origen):
+    padres = {}
+    orden = {}
+    visitados = set()
+    padres[origen] = None
+    orden[origen] = 0
+    visitados.add(origen)
+    _dfs(grafo, origen, visitados, padres, orden)
+    return padres, orden
 
 def bfs(grafo, origen):
     visitados = set()
@@ -135,4 +159,35 @@ def navegacion(grafo, origen):
     #TODO: Prints, chequear si son estrictos y arreglar
     print(f'{origen}', end=" ")
     return _navegacion(grafo, origen, 0)
-        
+
+def get_pagerank(grafo, origen, k):
+    if (k == 50):
+        return 1
+    d = 0.75
+    primer_termino = (1-d)/grafo.cantidad
+    segundo_termino = 0
+    vertices = grafo.obtener_vertices()
+    for v in vertices:
+        adyacentes = grafo.obtener_adyacentes(origen)
+        if v in adyacentes:
+            k += 1
+            segundo_termino += get_pagerank(grafo, v, k)/len(adyacentes)
+    print(primer_termino + segundo_termino)
+    return primer_termino + segundo_termino
+
+def mas_importantes(grafo, n):
+    pageranks = {}
+    heap = []
+    vertices = grafo.obtener_vertices()
+    for v in vertices:
+        k = 0
+        pagerank = get_pagerank(grafo, v, k)
+        heapq.heappush(heap, pagerank)
+        pageranks[pagerank] = v
+    
+    maximos = heapq.nlargest(n, heap)
+
+    for valor in maximos:
+        print(f'{pageranks[valor]},', end=" ")
+
+
