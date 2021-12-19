@@ -160,34 +160,36 @@ def navegacion(grafo, origen):
     print(f'{origen}', end=" ")
     return _navegacion(grafo, origen, 0)
 
-def get_pagerank(grafo, origen, k):
+def get_pagerank(grafo, pageranks, k):
     if (k == 50):
-        return 1
-    d = 0.75
-    primer_termino = (1-d)/grafo.cantidad
-    segundo_termino = 0
+        return pageranks
     vertices = grafo.obtener_vertices()
     for v in vertices:
-        adyacentes = grafo.obtener_adyacentes(origen)
-        if v in adyacentes:
-            k += 1
-            segundo_termino += get_pagerank(grafo, v, k)/len(adyacentes)
-    print(primer_termino + segundo_termino)
-    return primer_termino + segundo_termino
+        ady_origen = grafo.obtener_adyacentes(v)
+        for vertice in vertices:
+            if vertice in ady_origen:
+                ady = grafo.obtener_adyacentes(vertice)
+                if len(ady) == 0:
+                    continue
+                pageranks[vertice] += pageranks[v]/len(ady_origen)
+    return get_pagerank(grafo, pageranks, k+1)
 
 def mas_importantes(grafo, n):
     pageranks = {}
     heap = []
     vertices = grafo.obtener_vertices()
+    # Inicializamos los pageranks
     for v in vertices:
-        k = 0
-        pagerank = get_pagerank(grafo, v, k)
-        heapq.heappush(heap, pagerank)
-        pageranks[pagerank] = v
+        pageranks[v] = (1 - 0.75)/grafo.cantidad
+
+    k = 0
+    pageranks = get_pagerank(grafo, pageranks, k)
+    for v in vertices:
+        heapq.heappush(heap, (float(pageranks[v]), v))
     
     maximos = heapq.nlargest(n, heap)
 
     for valor in maximos:
-        print(f'{pageranks[valor]},', end=" ")
+        print(f'{valor[1]},', end=" ")
 
 

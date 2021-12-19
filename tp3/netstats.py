@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 from grafo import Grafo
 from biblioteca import *
-RUTA_WIKI = 'test.tsv'
+RUTA_WIKI = 'wiki-reducido-5000.tsv'
 ES_DIRIGIDO = True
 def main():
     netstats = crear_red(RUTA_WIKI, ES_DIRIGIDO)
@@ -42,6 +42,6 @@ def main():
             if len(links) != 1:
                 continue
             n = links[0]
-            mas_importantes(netstats, n)
+            mas_importantes(netstats, int(n))
 
 main()
