@@ -5,7 +5,6 @@ RUTA_WIKI = 'wiki-reducido-75000.tsv'
 ES_DIRIGIDO = True
 def main():
     netstats = crear_red(RUTA_WIKI, ES_DIRIGIDO)
-    #print("Francia" in netstats.obtener_adyacentes("Argentina"))
     while True:
         entrada = input()
         entrada = entrada.split(" ", 1)
