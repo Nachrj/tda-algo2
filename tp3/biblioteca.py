@@ -7,7 +7,7 @@ import sys
 import re
 import random
 
-OPERACIONES = ['camino', 'clustering', 'diametro', 'rango', 'navegacion', 'mas_importantes']
+OPERACIONES = ['camino', 'clustering', 'diametro', 'rango', 'navegacion', 'mas_importantes', 'ciclo']
 
 def crear_red(ruta, es_dirigido):
     g = Grafo(es_dirigido)
@@ -182,15 +182,41 @@ def mas_importantes(grafo, n):
     # Inicializamos los pageranks
     for v in vertices:
         pageranks[v] = (1 - 0.75)/grafo.cantidad
-
     k = 0
     pageranks = get_pagerank(grafo, pageranks, k)
     for v in vertices:
         heapq.heappush(heap, (float(pageranks[v]), v))
     
     maximos = heapq.nlargest(n, heap)
-
     for valor in maximos:
         print(f'{valor[1]},', end=" ")
 
+def es_valido_ciclo(recorrido, n):
+    return len(recorrido) < n
+        
+def _ciclo(grafo, pagina_actual, pagina_origen, visitados, n, recorrido):
+    if len(recorrido) == n and pagina_actual == pagina_origen:
+        return True
+    adyacentes = grafo.obtener_adyacentes(pagina_actual)
+    for w in adyacentes:
+        if w not in visitados:
+            recorrido.append(w)
+            visitados.add(w)
+            if not es_valido_ciclo(recorrido, n+1):
+                recorrido.pop()
+                visitados.remove(w)
+                continue
+            if(_ciclo(grafo, w, pagina_origen, visitados, n, recorrido)):
+                return True
+    visitados.remove(pagina_actual)
+    recorrido.pop()
+    return False
 
+def ciclo(grafo, pagina, n):
+    recorrido = []
+    visitados = set()
+    _ciclo(grafo, pagina, pagina, visitados, n, recorrido)
+    recorrido.insert(0, pagina)
+    print(recorrido[0],end=" ")
+    for v in recorrido[1:]:
+        print(f'-> {v}',end=" ")

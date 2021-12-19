@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 from grafo import Grafo
 from biblioteca import *
-RUTA_WIKI = 'test.tsv'
+RUTA_WIKI = 'maximo.tsv'
 ES_DIRIGIDO = True
 def main():
     netstats = crear_red(RUTA_WIKI, ES_DIRIGIDO)
@@ -43,5 +43,7 @@ def main():
                 continue
             n = links[0]
             mas_importantes(netstats, int(n))
-
+        if comando == 'ciclo':
+            links = parametros.split(',')
+            ciclo(netstats, links[0], int(links[1]))
 main()

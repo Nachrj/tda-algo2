@@ -16,6 +16,7 @@ class Grafo:
             if v in self.obtener_adyacentes(w):
                 self.borrar_arista(v, w)
         self.vertices.pop(v)
+        self.cantidad -= 1
 
     def agregar_arista(self, v, w, peso=1):
         """
