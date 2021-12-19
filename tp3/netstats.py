@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 from grafo import Grafo
 from biblioteca import *
-RUTA_WIKI = 'maximo.tsv'
+RUTA_WIKI = 'wiki-reducido-75000.tsv'
 ES_DIRIGIDO = True
 def main():
     netstats = crear_red(RUTA_WIKI, ES_DIRIGIDO)

@@ -162,18 +162,15 @@ def navegacion(grafo, origen):
     return _navegacion(grafo, origen, 0)
 
 def get_pagerank(grafo, pageranks, k):
-    if (k == 50):
-        return pageranks
-    vertices = grafo.obtener_vertices()
-    for v in vertices:
-        ady_origen = grafo.obtener_adyacentes(v)
-        for vertice in vertices:
-            if vertice in ady_origen:
-                ady = grafo.obtener_adyacentes(vertice)
-                if len(ady) == 0:
-                    continue
-                pageranks[vertice] += pageranks[v]/len(ady_origen)
-    return get_pagerank(grafo, pageranks, k+1)
+    for i in range(k):   
+        vertices = grafo.obtener_vertices()
+        for v in vertices:
+            ady = grafo.obtener_adyacentes(v)
+            for a in ady:
+                pageranks[a] += pageranks[v]/len(ady)
+    for key, value in pageranks.items():
+        pageranks[key] *= 0.75
+    return pageranks
 
 def mas_importantes(grafo, n):
     pageranks = {}
@@ -181,15 +178,15 @@ def mas_importantes(grafo, n):
     vertices = grafo.obtener_vertices()
     # Inicializamos los pageranks
     for v in vertices:
-        pageranks[v] = (1 - 0.75)/grafo.cantidad
-    k = 0
+        pageranks[v] = (1-0.75)/grafo.cantidad
+    k = 50
     pageranks = get_pagerank(grafo, pageranks, k)
     for v in vertices:
         heapq.heappush(heap, (float(pageranks[v]), v))
     
     maximos = heapq.nlargest(n, heap)
     for valor in maximos:
-        print(f'{valor[1]},', end=" ")
+        print(f'{valor[1]}', end=" ")
 
 def es_valido_ciclo(recorrido, n):
     return len(recorrido) < n
