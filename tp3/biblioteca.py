@@ -185,8 +185,10 @@ def mas_importantes(grafo, n):
         heapq.heappush(heap, (float(pageranks[v]), v))
     
     maximos = heapq.nlargest(n, heap)
-    for valor in maximos:
-        print(f'{valor[1]}', end=" ")
+    print(f'{maximos[0][1]}', end = "")
+    for valor in maximos[1:]:
+        print(f', {valor[1]}', end="")
+    print()
 
 def es_valido_ciclo(recorrido, n):
     return len(recorrido) < n
@@ -205,15 +207,19 @@ def _ciclo(grafo, pagina_actual, pagina_origen, visitados, n, recorrido):
                 continue
             if(_ciclo(grafo, w, pagina_origen, visitados, n, recorrido)):
                 return True
-    visitados.remove(pagina_actual)
-    recorrido.pop()
+    if len(visitados) > 0 and len(recorrido) > 0:
+        visitados.remove(pagina_actual)
+        recorrido.pop()
     return False
 
 def ciclo(grafo, pagina, n):
     recorrido = []
     visitados = set()
-    _ciclo(grafo, pagina, pagina, visitados, n, recorrido)
+    if not _ciclo(grafo, pagina, pagina, visitados, n, recorrido):
+        print("No se encontro recorrido")
+        return
     recorrido.insert(0, pagina)
     print(recorrido[0],end=" ")
     for v in recorrido[1:]:
         print(f'-> {v}',end=" ")
+    print()
