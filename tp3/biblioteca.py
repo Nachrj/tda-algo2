@@ -2,12 +2,7 @@ from collections import deque
 from grafo import Grafo
 
 import heapq
-import sys
-
 import re
-import random
-
-OPERACIONES = ['camino', 'clustering', 'diametro', 'rango', 'navegacion', 'mas_importantes', 'ciclo']
 
 def crear_red(ruta, es_dirigido):
     g = Grafo(es_dirigido)
@@ -20,9 +15,7 @@ def crear_red(ruta, es_dirigido):
                 g.agregar_arista(recortado[0], valor)
     return g
 
-def listar_operaciones():
-    for operacion in OPERACIONES:
-        print(operacion)
+
 
 def _dfs(grafo, v, visitados, padres, orden):
     for w in grafo.adyacentes(v):
@@ -161,15 +154,21 @@ def navegacion(grafo, origen):
     print(f'{origen}', end=" ")
     return _navegacion(grafo, origen, 0)
 
+def tiene_adyacente_a_v(grafo):
+    dic = {}
+    for v in grafo.obtener_vertices():
+        for w in grafo.obtener_adyacentes(v):
+            dic[w] = dic.get(w, [])
+            dic[w].append(v)
+    return dic
+
 def get_pagerank(grafo, pageranks, k):
-    for i in range(k):   
+    for _ in range(k):   
         vertices = grafo.obtener_vertices()
         for v in vertices:
             ady = grafo.obtener_adyacentes(v)
             for a in ady:
                 pageranks[a] += pageranks[v]/len(ady)
-    for key, value in pageranks.items():
-        pageranks[key] *= 0.75
     return pageranks
 
 def mas_importantes(grafo, n):

@@ -1,12 +1,20 @@
 #!/usr/bin/python3
 from grafo import Grafo
 from biblioteca import *
-RUTA_WIKI = 'wiki-reducido-75000.tsv'
+import sys
 ES_DIRIGIDO = True
-def main():
-    netstats = crear_red(RUTA_WIKI, ES_DIRIGIDO)
+OPERACIONES = ['camino', 'clustering', 'diametro', 'rango', 'navegacion', 'mas_importantes', 'ciclo']
+def listar_operaciones():
+    for operacion in OPERACIONES:
+        print(operacion)
+def main(RUTA):
+    netstats = crear_red(RUTA, ES_DIRIGIDO)
+    
     while True:
-        entrada = input()
+        try:
+            entrada = input()
+        except:
+            break
         entrada = entrada.split(" ", 1)
         comando = entrada[0]
         if len(entrada) > 1:
@@ -45,4 +53,4 @@ def main():
         if comando == 'ciclo':
             links = parametros.split(',')
             ciclo(netstats, links[0], int(links[1]))
-main()
+main(sys.argv[1])
