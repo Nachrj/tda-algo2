@@ -3,7 +3,7 @@ from grafo import Grafo
 
 import heapq
 import re
-
+import time
 def crear_red(ruta, es_dirigido):
     g = Grafo(es_dirigido)
     with open(ruta, encoding='utf-8') as archivo:
@@ -162,32 +162,39 @@ def tiene_adyacente_a_v(grafo):
             dic[w].append(v)
     return dic
 
-def get_pagerank(grafo, pageranks, k):
+""""""
+def get_pagerank(grafo, pageranks, pageranks_anterior, k):
+    dic = tiene_adyacente_a_v(grafo)
     for _ in range(k):   
         vertices = grafo.obtener_vertices()
         for v in vertices:
-            ady = grafo.obtener_adyacentes(v)
-            for a in ady:
-                pageranks[a] += pageranks[v]/len(ady)
+            
+            for a in dic[v]:
+                pageranks_anterior[v] = pageranks_anterior.get(v, 0) + pageranks[a]/len(grafo.obtener_adyacentes(a)) + (1-0.75)/len(grafo.obtener_vertices())
+                
+        for v in vertices:
+            pageranks[v] += pageranks_anterior[v] * 0.75
     return pageranks
 
 def mas_importantes(grafo, n):
     pageranks = {}
+    pageranks_anterior = {}
     heap = []
     vertices = grafo.obtener_vertices()
+    
     # Inicializamos los pageranks
     for v in vertices:
-        pageranks[v] = (1-0.75)/grafo.cantidad
+        pageranks[v] = (1-0.75)/len(grafo.obtener_vertices())
     k = 50
-    pageranks = get_pagerank(grafo, pageranks, k)
-    for v in vertices:
-        heapq.heappush(heap, (float(pageranks[v]), v))
+    pageranks = get_pagerank(grafo, pageranks, pageranks_anterior, k)
     
-    maximos = heapq.nlargest(n, heap)
-    print(f'{maximos[0][1]}', end = "")
+    maximos = heapq.nlargest(n, vertices, key=lambda v : pageranks[v])
+    print(f'{maximos[0]}', end = "")
     for valor in maximos[1:]:
-        print(f', {valor[1]}', end="")
+       print(f', {valor}', end="")
     print()
+    return maximos
+    
 
 def es_valido_ciclo(recorrido, n):
     return len(recorrido) < n

@@ -49,10 +49,7 @@ class Grafo:
         """
         Devuelve una lista con todos los vertices del grafo
         """
-        lista = []
-        for v in self.vertices:
-            lista.append(v)
-        return lista
+        return self.vertices
     
     def obtener_adyacentes(self, v):
         """
